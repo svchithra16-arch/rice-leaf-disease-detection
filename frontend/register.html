@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account - AgriVersion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/assets/css/animations.css">
+</head>
+<body>
+
+  <!-- Navbar Placeholder -->
+  <div id="navbarPlaceholder"></div>
+
+  <div class="container py-5 my-auto">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 col-md-8">
+        <div class="glass-card p-4 p-md-5">
+          <div class="text-center mb-4">
+            <span class="fs-1">🌾</span>
+            <h3 class="fw-bold text-white mt-2" data-i18n="auth.register_title">Create AgriVersion Account</h3>
+            <p class="text-muted" style="font-size:0.9rem;" data-i18n="auth.register_subtitle">
+              Empowering farmers and agronomists with next-gen AI diagnostics
+            </p>
+          </div>
+
+          <form id="registerForm" onsubmit="handleRegisterSubmit(event)">
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label-agri" data-i18n="auth.full_name">Full Name</label>
+                <input type="text" id="regFullName" class="form-control form-control-agri" placeholder="Ramesh Kumar" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label-agri" data-i18n="auth.username">Username</label>
+                <input type="text" id="regUsername" class="form-control form-control-agri" placeholder="ramesh_farmer" required>
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label-agri" data-i18n="auth.email">Email Address</label>
+                <input type="email" id="regEmail" class="form-control form-control-agri" placeholder="ramesh@gmail.com" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label-agri" data-i18n="auth.phone">Mobile Number</label>
+                <input type="tel" id="regPhone" class="form-control form-control-agri" placeholder="+91 98765 43210">
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label-agri" data-i18n="auth.location">Location / Region</label>
+                <input type="text" id="regLocation" class="form-control form-control-agri" placeholder="Mandya, Karnataka" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label-agri">Preferred Language</label>
+                <select id="regLanguage" class="form-select form-control-agri">
+                  <option value="en">English (English)</option>
+                  <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                  <option value="te">Telugu (తెలుగు)</option>
+                  <option value="hi">Hindi (हिन्दी)</option>
+                  <option value="ta">Tamil (தமிழ்)</option>
+                  <option value="ml">Malayalam (മലയാളം)</option>
+                  <option value="mr">Marathi (मराठी)</option>
+                  <option value="bn">Bengali (বাংলা)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label-agri" data-i18n="auth.password">Password</label>
+                <input type="password" id="regPassword" class="form-control form-control-agri" placeholder="••••••••" required oninput="checkPasswordStrength()">
+                <!-- Strength bar -->
+                <div class="progress mt-2" style="height:4px;">
+                  <div id="pwdStrengthBar" class="progress-bar bg-danger" style="width:0%"></div>
+                </div>
+                <div class="d-flex justify-content-between mt-1" style="font-size:0.75rem;">
+                  <span class="text-muted" data-i18n="auth.pwd_strength">Strength:</span>
+                  <span id="pwdStrengthLabel" class="text-muted fw-bold">None</span>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label-agri" data-i18n="auth.confirm_password">Confirm Password</label>
+                <input type="password" id="regConfirmPassword" class="form-control form-control-agri" placeholder="••••••••" required oninput="checkPasswordMatch()">
+                <div id="pwdMatchFeedback" style="font-size:0.75rem;margin-top:4px;"></div>
+              </div>
+            </div>
+
+            <div class="d-grid gap-2 my-4">
+              <button type="submit" id="btnRegisterSubmit" class="btn-agri-primary" style="padding:0.75rem;">
+                <span data-i18n="auth.btn_register">Create Account</span> <i class="fas fa-arrow-right ms-1"></i>
+              </button>
+            </div>
+
+            <div class="text-center">
+              <span class="text-muted" style="font-size:0.9rem;" data-i18n="auth.have_account">Already registered?</span>
+              <a href="/login.html" class="text-emerald fw-bold ms-1" style="font-size:0.9rem;" data-i18n="auth.btn_login">Sign In</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Placeholder -->
+  <div id="footerPlaceholder"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/i18n.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      AgriApp.renderNavbar();
+      AgriApp.renderFooter();
+      AgriApp.checkAuth(false);
+    });
+
+    function checkPasswordStrength() {
+      const pwd = document.getElementById("regPassword").value;
+      const bar = document.getElementById("pwdStrengthBar");
+      const label = document.getElementById("pwdStrengthLabel");
+
+      let score = 0;
+      if (pwd.length >= 6) score += 25;
+      if (pwd.length >= 8) score += 25;
+      if (/[A-Z]/.test(pwd)) score += 25;
+      if (/[0-9!@#$%^&*]/.test(pwd)) score += 25;
+
+      bar.style.width = `${score}%`;
+      if (score <= 25) {
+        bar.className = "progress-bar bg-danger";
+        label.textContent = "Weak";
+        label.className = "text-danger fw-bold";
+      } else if (score <= 75) {
+        bar.className = "progress-bar bg-warning";
+        label.textContent = "Medium";
+        label.className = "text-warning fw-bold";
+      } else {
+        bar.className = "progress-bar bg-success";
+        label.textContent = "Strong";
+        label.className = "text-success fw-bold";
+      }
+    }
+
+    function checkPasswordMatch() {
+      const pwd = document.getElementById("regPassword").value;
+      const cpwd = document.getElementById("regConfirmPassword").value;
+      const fb = document.getElementById("pwdMatchFeedback");
+
+      if (!cpwd) {
+        fb.textContent = "";
+        return;
+      }
+
+      if (pwd === cpwd) {
+        fb.textContent = "✓ Passwords match";
+        fb.className = "text-success";
+      } else {
+        fb.textContent = "✗ Passwords do not match";
+        fb.className = "text-danger";
+      }
+    }
+
+    async function handleRegisterSubmit(e) {
+      e.preventDefault();
+      const fullName = document.getElementById("regFullName").value.trim();
+      const username = document.getElementById("regUsername").value.trim().toLowerCase();
+      const email = document.getElementById("regEmail").value.trim().toLowerCase();
+      const phone = document.getElementById("regPhone").value.trim();
+      const location = document.getElementById("regLocation").value.trim();
+      const lang = document.getElementById("regLanguage").value;
+      const password = document.getElementById("regPassword").value;
+      const confirmPassword = document.getElementById("regConfirmPassword").value;
+      const btn = document.getElementById("btnRegisterSubmit");
+
+      if (password !== confirmPassword) {
+        AgriApp.showToast("Passwords do not match.", "error");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Creating Account...';
+
+      try {
+        const res = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            full_name: fullName,
+            username: username,
+            email: email,
+            phone: phone,
+            location: location,
+            preferred_lang: lang,
+            password: password,
+            confirm_password: confirmPassword
+          })
+        });
+
+        const data = await res.json();
+        btn.disabled = false;
+        btn.innerHTML = '<span>Create Account</span> <i class="fas fa-arrow-right ms-1"></i>';
+
+        if (data.success) {
+          AgriApp.showToast(data.message, "success");
+          if (window.AgriI18n) {
+            AgriI18n.setLanguage(lang);
+          }
+          setTimeout(() => {
+            window.location.href = "/dashboard.html";
+          }, 700);
+        } else {
+          AgriApp.showToast(data.message || "Registration failed.", "error");
+        }
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = '<span>Create Account</span> <i class="fas fa-arrow-right ms-1"></i>';
+        AgriApp.showToast("Server error during registration.", "error");
+      }
+    }
+  </script>
+</body>
+</html>

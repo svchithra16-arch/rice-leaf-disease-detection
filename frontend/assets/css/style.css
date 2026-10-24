@@ -1,0 +1,612 @@
+/* ==========================================================================
+   AgriVersion - Modern Emerald Glassmorphic Design System
+   ========================================================================== */
+
+:root {
+  --primary: #059669;
+  --primary-dark: #065f46;
+  --primary-light: #10b981;
+  --primary-subtle: rgba(16, 185, 129, 0.12);
+  --accent: #14b8a6;
+  --accent-gold: #f59e0b;
+  --danger: #ef4444;
+  --danger-subtle: rgba(239, 68, 68, 0.12);
+  --success: #10b981;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+
+  /* Dark theme base */
+  --bg-dark: #0b1512;
+  --bg-card: rgba(18, 33, 27, 0.82);
+  --bg-card-hover: rgba(24, 45, 37, 0.95);
+  --bg-card-glass: rgba(15, 29, 24, 0.65);
+  --border-glass: rgba(52, 211, 153, 0.22);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+
+  /* Typography (High-Contrast for Dark Theme) */
+  --text-main: #f8fafc;
+  --text-muted: #cbd5e1;
+  --text-dim: #94a3b8;
+  --text-emerald: #34d399;
+
+  /* Shadows & Glows */
+  --glow-emerald: 0 0 25px rgba(16, 185, 129, 0.25);
+  --glow-accent: 0 0 30px rgba(20, 184, 166, 0.3);
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(5, 150, 105, 0.15) 0%, transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(20, 184, 166, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(6, 95, 70, 0.08) 0%, transparent 60%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   Navigation Bar
+   ========================================================================== */
+
+.navbar-agri {
+  background: rgba(11, 21, 18, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-glass);
+  padding: 0.8rem 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 1050;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.navbar-brand-agri {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+
+.navbar-brand-agri .brand-icon {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.5));
+}
+
+.navbar-brand-agri .brand-gradient {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.nav-link-agri {
+  color: var(--text-muted) !important;
+  font-weight: 500;
+  font-size: 0.93rem;
+  padding: 0.5rem 0.85rem !important;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
+}
+
+.nav-link-agri:hover,
+.nav-link-agri.active {
+  color: #fff !important;
+  background: var(--primary-subtle);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
+}
+
+.lang-selector-btn {
+  background: rgba(18, 33, 27, 0.9);
+  color: #fff;
+  border: 1px solid var(--border-glass);
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-full);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: var(--transition);
+}
+
+.lang-selector-btn:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-light);
+  box-shadow: var(--glow-emerald);
+}
+
+.dropdown-menu-agri {
+  background: rgba(18, 33, 27, 0.96);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+  padding: 0.5rem;
+  min-width: 180px;
+}
+
+.dropdown-item-agri {
+  color: var(--text-main);
+  padding: 0.55rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.dropdown-item-agri:hover,
+.dropdown-item-agri.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* ==========================================================================
+   Cards & Glassmorphism
+   ========================================================================== */
+
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-card);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.4), transparent);
+}
+
+.glass-card-interactive:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.55), var(--glow-emerald);
+  border-color: rgba(52, 211, 153, 0.45);
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.btn-agri-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  padding: 0.65rem 1.4rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.35);
+  transition: var(--transition);
+  text-decoration: none;
+}
+
+.btn-agri-primary:hover {
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(16, 185, 129, 0.45);
+}
+
+.btn-agri-outline {
+  background: rgba(18, 33, 27, 0.6);
+  color: var(--text-emerald);
+  border: 1px solid var(--border-glass);
+  padding: 0.65rem 1.4rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: var(--transition);
+  text-decoration: none;
+}
+
+.btn-agri-outline:hover {
+  background: var(--primary-subtle);
+  color: #fff;
+  border-color: var(--primary-light);
+  transform: translateY(-2px);
+}
+
+.btn-agri-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-agri-danger:hover {
+  background: var(--danger);
+  color: #fff;
+}
+
+/* ==========================================================================
+   Badges & Indicators
+   ========================================================================== */
+
+.badge-sev-healthy {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.badge-sev-low {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.badge-sev-mild {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.badge-sev-moderate {
+  background: rgba(249, 115, 22, 0.2);
+  color: #fb923c;
+  border: 1px solid rgba(249, 115, 22, 0.4);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.badge-sev-severe {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Form Controls
+   ========================================================================== */
+
+.form-control-agri {
+  background: rgba(18, 33, 27, 0.75) !important;
+  border: 1px solid var(--border-glass) !important;
+  color: #fff !important;
+  border-radius: var(--radius-md) !important;
+  padding: 0.75rem 1rem !important;
+  font-size: 0.95rem !important;
+  transition: var(--transition) !important;
+}
+
+.form-control-agri:focus {
+  background: rgba(24, 45, 37, 0.9) !important;
+  border-color: var(--primary-light) !important;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.3) !important;
+  color: #fff !important;
+}
+
+.form-label-agri {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* ==========================================================================
+   Drag & Drop Zone
+   ========================================================================== */
+
+.drop-zone {
+  border: 2px dashed rgba(52, 211, 153, 0.4);
+  background: rgba(16, 185, 129, 0.04);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+}
+
+.drop-zone:hover,
+.drop-zone.dragover {
+  border-color: var(--primary-light);
+  background: rgba(16, 185, 129, 0.1);
+  box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.15), var(--glow-emerald);
+}
+
+.drop-zone-icon {
+  font-size: 3.2rem;
+  color: var(--primary-light);
+  margin-bottom: 0.75rem;
+}
+
+/* ==========================================================================
+   Toast Alerts
+   ========================================================================== */
+
+.agri-toast-container {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.agri-toast {
+  background: rgba(18, 33, 27, 0.95);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
+  border-left: 4px solid var(--primary);
+  color: #fff;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  min-width: 300px;
+  max-width: 420px;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  animation: slideInRight 0.3s ease;
+}
+
+.agri-toast.toast-error {
+  border-left-color: var(--danger);
+}
+
+.agri-toast.toast-warning {
+  border-left-color: var(--warning);
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+.footer-agri {
+  background: rgba(11, 21, 18, 0.95);
+  border-top: 1px solid var(--border-glass);
+  padding: 2.5rem 1.5rem 1.5rem;
+  margin-top: auto;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.footer-agri a {
+  color: var(--text-emerald);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.footer-agri a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.6); opacity: 0.2; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+/* Store & Product Availability Styles */
+.custom-user-marker, .custom-store-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   High-Contrast Dark Mode Text & Element Overrides
+   ========================================================================== */
+
+/* Fix dark / muted text visibility across entire site */
+.text-muted,
+p.text-muted,
+div.text-muted,
+span.text-muted,
+small.text-muted,
+label.text-muted,
+.form-text {
+  color: #cbd5e1 !important;
+}
+
+.text-secondary {
+  color: #94a3b8 !important;
+}
+
+p, span, div, label {
+  color: inherit;
+}
+
+/* Form labels and Checkbox / Switch text */
+.form-label,
+.form-label-agri,
+.form-check-label {
+  color: #e2e8f0 !important;
+  font-weight: 500;
+}
+
+/* Form input placeholders & text values */
+::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
+}
+
+::-webkit-input-placeholder {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
+}
+
+::-moz-placeholder {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
+}
+
+:-ms-input-placeholder {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
+}
+
+.form-control,
+.form-control-agri,
+.form-select {
+  color: #f8fafc !important;
+  background-color: rgba(18, 33, 27, 0.85) !important;
+}
+
+.form-select option {
+  background-color: #0b1512 !important;
+  color: #f8fafc !important;
+  padding: 8px;
+}
+
+/* Store Cards Text Contrast */
+.store-card {
+  color: #f8fafc !important;
+}
+
+.store-card .text-muted {
+  color: #cbd5e1 !important;
+}
+
+.store-card h5, .store-card h4, .store-card h3 {
+  color: #ffffff !important;
+}
+
+.product-pill {
+  color: #f8fafc !important;
+  background: rgba(255, 255, 255, 0.09) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+}
+
+.freshness-tag.fresh {
+  color: #34d399 !important;
+  font-weight: 600;
+}
+
+.freshness-tag.stale {
+  color: #fbbf24 !important;
+  font-weight: 600;
+}
+
+/* Modal and Offcanvas text clarity */
+.modal-content,
+.offcanvas {
+  background-color: #0d1b16 !important;
+  color: #f8fafc !important;
+  border: 1px solid var(--border-glass) !important;
+}
+
+.modal-content .text-muted,
+.offcanvas .text-muted {
+  color: #cbd5e1 !important;
+}
+
+.modal-content label,
+.offcanvas label {
+  color: #e2e8f0 !important;
+}
+
+.modal-header,
+.modal-footer,
+.offcanvas-header {
+  border-color: var(--border-subtle) !important;
+}
+
+/* Table Text Clarity in Dark Mode */
+.table {
+  color: #f8fafc !important;
+}
+
+.table th {
+  color: #34d399 !important;
+  background: rgba(16, 185, 129, 0.08) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+.table td {
+  color: #e2e8f0 !important;
+  border-color: var(--border-subtle) !important;
+}
+
+/* Alert Boxes Text Clarity */
+.alert {
+  color: #f8fafc !important;
+}
+
+.alert span, .alert p {
+  color: #e2e8f0 !important;
+}
+
+

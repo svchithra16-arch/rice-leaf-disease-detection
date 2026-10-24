@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AgriVersion - Mobile GPS Transmitter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <style>
+    body {
+      background: radial-gradient(circle at 50% 0%, #064e3b 0%, #031c15 50%, #020d0a 100%);
+      min-height: 100vh;
+      color: #f8fafc;
+      font-family: 'Outfit', sans-serif;
+      padding-bottom: 30px;
+    }
+    .mobile-header {
+      padding: 1.25rem 1rem;
+      border-bottom: 1px solid rgba(52, 211, 153, 0.2);
+      background: rgba(4, 30, 23, 0.7);
+      backdrop-filter: blur(12px);
+    }
+    .gps-card {
+      background: rgba(13, 27, 22, 0.85);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+    }
+    .pulse-ring {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(16, 185, 129, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      position: relative;
+    }
+    .pulse-ring.active::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid #34d399;
+      animation: pulseAnimation 2s infinite;
+    }
+    .pulse-ring.error {
+      background: rgba(239, 68, 68, 0.2);
+    }
+    .pulse-ring.error::after {
+      border-color: #ef4444;
+    }
+    @keyframes pulseAnimation {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+    .metric-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 0.85rem;
+      text-align: center;
+    }
+    .metric-label {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .metric-value {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      font-family: 'Inter', monospace;
+    }
+    .status-badge {
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 0.4rem 1rem;
+      border-radius: 30px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .badge-transmitting {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid #10b981;
+      color: #34d399;
+    }
+    .badge-waiting {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid #f59e0b;
+      color: #fbbf24;
+    }
+    .badge-error {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid #ef4444;
+      color: #f87171;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="mobile-header text-center sticky-top">
+    <div class="d-flex align-items-center justify-content-center gap-2">
+      <span class="fs-4">🌾</span>
+      <h5 class="fw-bold mb-0 text-white">AgriVersion GPS Transmitter</h5>
+    </div>
+    <small class="text-emerald d-block mt-1">Live Mobile Location Sync to Laptop</small>
+  </header>
+
+  <div class="container px-3 mt-3">
+
+    <!-- Status Card -->
+    <div class="gps-card text-center mb-3">
+      <div id="pulseIcon" class="pulse-ring active">
+        <i id="statusIcon" class="fas fa-satellite-dish fa-2x text-emerald"></i>
+      </div>
+
+      <div id="statusBadgeContainer" class="mb-2">
+        <span id="statusBadge" class="status-badge badge-waiting">
+          <i class="fas fa-spinner fa-spin"></i> Initializing GPS...
+        </span>
+      </div>
+
+      <p id="statusDesc" class="text-muted small mb-3">
+        Connecting to AgriVersion session and acquiring hardware GPS lock...
+      </p>
+
+      <!-- Session Info Pill -->
+      <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3" style="background:rgba(255,255,255,0.06);font-size:0.8rem;">
+        <span class="text-muted">Session ID:</span>
+        <b id="sessionDisplay" class="text-emerald">...</b>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="d-flex gap-2 justify-content-center">
+        <button id="toggleGpsBtn" class="btn btn-sm btn-agri-primary px-3" onclick="toggleGps()">
+          <i class="fas fa-pause me-1"></i> Pause Sharing
+        </button>
+        <button class="btn btn-sm btn-outline-secondary text-white px-3" onclick="requestGpsAgain()">
+          <i class="fas fa-sync-alt me-1"></i> Refresh Lock
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Coordinates Grid -->
+    <div class="gps-card mb-3">
+      <h6 class="text-white fw-bold mb-3 d-flex align-items-center gap-2">
+        <i class="fas fa-map-pin text-emerald"></i> Live Mobile Coordinates
+      </h6>
+
+      <div class="row g-2 mb-2">
+        <div class="col-6">
+          <div class="metric-box">
+            <div class="metric-label">Latitude</div>
+            <div class="metric-value text-emerald" id="valLat">--.----</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="metric-box">
+            <div class="metric-label">Longitude</div>
+            <div class="metric-value text-emerald" id="valLng">--.----</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-2 mb-3">
+        <div class="col-6">
+          <div class="metric-box">
+            <div class="metric-label">GPS Accuracy</div>
+            <div class="metric-value" id="valAccuracy">± -- m</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="metric-box">
+            <div class="metric-label">Transmitted Pings</div>
+            <div class="metric-value text-info" id="valPings">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-2 rounded" style="background:rgba(255,255,255,0.03);font-size:0.82rem;">
+        <div class="d-flex justify-content-between mb-1">
+          <span class="text-muted">Detected Locality:</span>
+          <b id="valLocality" class="text-white text-end">Resolving...</b>
+        </div>
+        <div class="d-flex justify-content-between">
+          <span class="text-muted">Last Laptop Sync:</span>
+          <span id="valLastSync" class="text-muted">Just now</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Permission Guide (Hidden by default, shown if denied/error) -->
+    <div id="permissionHelpCard" class="card p-3 mb-3 d-none" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.4);border-radius:16px;">
+      <h6 class="text-danger fw-bold mb-2">
+        <i class="fas fa-exclamation-triangle me-1"></i> Location Permission Blocked
+      </h6>
+      <p class="small text-white mb-2">
+        Your browser or phone prevented AgriVersion from reading your live GPS position.
+      </p>
+      <div class="text-start small text-muted p-2 rounded" style="background:rgba(0,0,0,0.3);line-height:1.5;">
+        <b class="text-white d-block mb-1">How to enable location:</b>
+        1. Tap the <b>Lock / Settings icon</b> on the top address bar.<br>
+        2. Tap <b>Permissions</b> or <b>Site Settings</b>.<br>
+        3. Set <b>Location</b> to <b>"Allow"</b>.<br>
+        4. Tap the button below to re-verify.
+      </div>
+      <button class="btn btn-sm btn-danger mt-3 w-100" onclick="requestGpsAgain()">
+        <i class="fas fa-check-circle me-1"></i> Retry Allowing GPS Permission
+      </button>
+    </div>
+
+    <!-- Custom Location Search (Type Any City/Town/Village in India) -->
+    <div class="gps-card mb-3">
+      <h6 class="text-white fw-bold mb-2 d-flex align-items-center gap-2">
+        <i class="fas fa-search-location text-emerald"></i> Set Exact Town / City
+      </h6>
+      <p class="small text-muted mb-2">Type your exact town, taluk, village or district:</p>
+      <div class="input-group mb-2">
+        <input type="text" id="customLocationInput" class="form-control form-control-sm text-white" placeholder="e.g. Hassan, Davanagere, Belagavi, Koppal..." style="background:rgba(255,255,255,0.08);border-color:rgba(52,211,153,0.3);" onkeydown="if(event.key==='Enter') searchAndTransmitCustomLocation()">
+        <button class="btn btn-sm btn-agri-primary" onclick="searchAndTransmitCustomLocation()">
+          <i class="fas fa-paper-plane me-1"></i> Send
+        </button>
+      </div>
+      <div class="d-flex flex-wrap gap-1 mt-2">
+        <button class="btn btn-sm btn-outline-light rounded-pill px-2 py-0" style="font-size:0.75rem;" onclick="transmitManualLocation(12.5218, 76.8951, 'Mandya, Karnataka')">Mandya</button>
+        <button class="btn btn-sm btn-outline-light rounded-pill px-2 py-0" style="font-size:0.75rem;" onclick="transmitManualLocation(13.2936, 77.5342, 'Doddaballapur, Bengaluru Rural')">Doddaballapur</button>
+        <button class="btn btn-sm btn-outline-light rounded-pill px-2 py-0" style="font-size:0.75rem;" onclick="transmitManualLocation(12.2958, 76.6394, 'Mysuru, Karnataka')">Mysuru</button>
+        <button class="btn btn-sm btn-outline-light rounded-pill px-2 py-0" style="font-size:0.75rem;" onclick="transmitManualLocation(13.0033, 76.1004, 'Hassan, Karnataka')">Hassan</button>
+        <button class="btn btn-sm btn-outline-light rounded-pill px-2 py-0" style="font-size:0.75rem;" onclick="transmitManualLocation(13.9299, 75.5681, 'Shivamogga, Karnataka')">Shivamogga</button>
+        <button class="btn btn-sm btn-outline-light rounded-pill px-2 py-0" style="font-size:0.75rem;" onclick="transmitManualLocation(14.4644, 75.9218, 'Davanagere, Karnataka')">Davanagere</button>
+        <button class="btn btn-sm btn-outline-light rounded-pill px-2 py-0" style="font-size:0.75rem;" onclick="transmitManualLocation(15.1394, 76.9214, 'Ballari, Karnataka')">Ballari</button>
+        <button class="btn btn-sm btn-outline-light rounded-pill px-2 py-0" style="font-size:0.75rem;" onclick="transmitManualLocation(15.8497, 74.4977, 'Belagavi, Karnataka')">Belagavi</button>
+        <button class="btn btn-sm btn-outline-light rounded-pill px-2 py-0" style="font-size:0.75rem;" onclick="transmitManualLocation(16.2076, 77.3463, 'Raichur, Karnataka')">Raichur</button>
+        <button class="btn btn-sm btn-outline-light rounded-pill px-2 py-0" style="font-size:0.75rem;" onclick="transmitManualLocation(12.9716, 77.5946, 'Bengaluru, Karnataka')">Bengaluru</button>
+      </div>
+    </div>
+
+    <!-- Instructions & Tip -->
+    <div class="p-3 rounded mb-3" style="background:rgba(6,95,70,0.2);border:1px solid rgba(52,211,153,0.25);border-radius:14px;font-size:0.85rem;">
+      <b class="text-emerald d-block mb-1"><i class="fas fa-info-circle me-1"></i> Instructions:</b>
+      <span class="text-muted">
+        • Keep this mobile tab open while using AgriVersion on your laptop.<br>
+        • Screen Wake Lock is active so your phone won't sleep.<br>
+        • Coordinates are securely streamed over your local Wi-Fi.
+      </span>
+    </div>
+
+  </div>
+
+  <script>
+    let sessionId = "";
+    let watchId = null;
+    let isBroadcasting = true;
+    let pingsCount = 0;
+    let wakeLock = null;
+    let lastSentTimestamp = 0;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      parseSessionId();
+      requestWakeLock();
+      startGpsTracking();
+    });
+
+    function parseSessionId() {
+      const params = new URLSearchParams(window.location.search);
+      sessionId = params.get("session") || params.get("session_id") || "default";
+      document.getElementById("sessionDisplay").textContent = sessionId;
+    }
+
+    async function requestWakeLock() {
+      if ('wakeLock' in navigator) {
+        try {
+          wakeLock = await navigator.wakeLock.request('screen');
+          console.log("Screen Wake Lock acquired.");
+        } catch (err) {
+          console.warn("Wake Lock not granted:", err);
+        }
+      }
+    }
+
+    function updateStatus(status, text, desc, iconClass = "fa-satellite-dish") {
+      const badge = document.getElementById("statusBadge");
+      const descEl = document.getElementById("statusDesc");
+      const pulse = document.getElementById("pulseIcon");
+      const icon = document.getElementById("statusIcon");
+
+      if (icon) icon.className = `fas ${iconClass} fa-2x ${status === 'error' ? 'text-danger' : 'text-emerald'}`;
+      if (descEl) descEl.textContent = desc;
+
+      if (badge) {
+        badge.className = `status-badge badge-${status}`;
+        badge.innerHTML = status === 'transmitting'
+          ? `<i class="fas fa-circle text-success" style="font-size:8px;"></i> ${text}`
+          : status === 'waiting'
+            ? `<i class="fas fa-spinner fa-spin"></i> ${text}`
+            : `<i class="fas fa-exclamation-triangle"></i> ${text}`;
+      }
+
+      if (pulse) {
+        pulse.className = `pulse-ring ${status === 'transmitting' ? 'active' : ''} ${status === 'error' ? 'error' : ''}`;
+      }
+    }
+
+    function startGpsTracking() {
+      if (!navigator.geolocation) {
+        updateStatus("error", "GPS Unsupported", "Your mobile browser does not support the Geolocation API.", "fa-exclamation-triangle");
+        reportStatusToBackend("unsupported", "Geolocation API not supported");
+        return;
+      }
+
+      updateStatus("waiting", "Acquiring GPS...", "Waiting for satellite fix from your phone's GPS chip...", "fa-satellite-dish");
+      
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 12000,
+        maximumAge: 0
+      };
+
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+
+      watchId = navigator.geolocation.watchPosition(
+        onGpsSuccess,
+        onGpsError,
+        options
+      );
+    }
+
+    async function onGpsSuccess(pos) {
+      if (!isBroadcasting) return;
+
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      const accuracy = pos.coords.accuracy || 10;
+      const altitude = pos.coords.altitude || null;
+      const heading = pos.coords.heading || null;
+      const speed = pos.coords.speed || null;
+
+      // Update UI
+      document.getElementById("valLat").textContent = lat.toFixed(5);
+      document.getElementById("valLng").textContent = lng.toFixed(5);
+
+      const accEl = document.getElementById("valAccuracy");
+      if (accEl) {
+        accEl.textContent = `± ${accuracy.toFixed(1)} m`;
+        accEl.className = `metric-value ${accuracy <= 15 ? 'text-success' : accuracy <= 40 ? 'text-warning' : 'text-danger'}`;
+      }
+
+      pingsCount++;
+      document.getElementById("valPings").textContent = pingsCount;
+      document.getElementById("valLastSync").textContent = new Date().toLocaleTimeString();
+
+      const helpCard = document.getElementById("permissionHelpCard");
+      if (helpCard) helpCard.classList.add("d-none");
+
+      updateStatus("transmitting", "Broadcasting to Laptop", `Streaming high-precision GPS (±${accuracy.toFixed(1)}m) to AgriVersion!`, "fa-broadcast-tower");
+
+      // Send to Backend
+      try {
+        const payload = {
+          session_id: sessionId,
+          lat: lat,
+          lng: lng,
+          accuracy: accuracy,
+          altitude: altitude,
+          heading: heading,
+          speed: speed,
+          device_info: navigator.userAgent
+        };
+
+        const res = await fetch("/api/location/session/update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          lastSentTimestamp = Date.now();
+        }
+      } catch (e) {
+        console.warn("Location send failure:", e);
+      }
+    }
+
+    async function onGpsError(err) {
+      console.warn("GPS Error code:", err.code, err.message);
+      const helpCard = document.getElementById("permissionHelpCard");
+
+      if (err.code === 1) { // PERMISSION_DENIED
+        updateStatus("waiting", "Using Network Location", "Browser restricted hardware GPS on HTTP. Trying Network/IP Geolocation fallback...", "fa-wifi");
+        if (helpCard) helpCard.classList.remove("d-none");
+        await tryNetworkLocationFallback("GPS Permission denied on browser");
+      } else if (err.code === 2) { // POSITION_UNAVAILABLE
+        updateStatus("waiting", "Acquiring Network Fix", "Phone GPS unavailable. Trying Network/IP fallback...", "fa-wifi");
+        await tryNetworkLocationFallback("Hardware GPS unavailable");
+      } else if (err.code === 3) { // TIMEOUT
+        updateStatus("waiting", "GPS Timeout - Using Network", "Satellite lock timed out. Trying Network/IP fallback...", "fa-wifi");
+        await tryNetworkLocationFallback("GPS Timeout");
+      } else {
+        await tryNetworkLocationFallback("Unknown GPS error");
+      }
+    }
+
+    async function tryNetworkLocationFallback(reason) {
+      try {
+        // Try IP geolocation services
+        let lat = null, lng = null, locality = "Local Paddy Region";
+        
+        try {
+          const res = await fetch("https://ipapi.co/json/");
+          const data = await res.json();
+          if (data && data.latitude && data.longitude) {
+            lat = parseFloat(data.latitude);
+            lng = parseFloat(data.longitude);
+            locality = `${data.city || 'Local Area'}, ${data.region || 'Karnataka'}`;
+          }
+        } catch (e1) {
+          try {
+            const res2 = await fetch("https://api.bigdatacloud.net/data/reverse-geocode-client");
+            const data2 = await res2.json();
+            if (data2 && data2.latitude && data2.longitude) {
+              lat = parseFloat(data2.latitude);
+              lng = parseFloat(data2.longitude);
+              locality = `${data2.city || data2.locality || 'Local Area'}, ${data2.principalSubdivision || 'Karnataka'}`;
+            }
+          } catch (e2) {}
+        }
+
+        // Default to Mandya/Doddaballapur agricultural belt if external IP service unreachable
+        if (!lat || !lng) {
+          lat = 13.2936;
+          lng = 77.5342;
+          locality = "Doddaballapur / Bengaluru Rural";
+        }
+
+        document.getElementById("valLat").textContent = lat.toFixed(5);
+        document.getElementById("valLng").textContent = lng.toFixed(5);
+        document.getElementById("valLocality").textContent = locality;
+        
+        const accEl = document.getElementById("valAccuracy");
+        if (accEl) {
+          accEl.textContent = "± Network Fix";
+          accEl.className = "metric-value text-info";
+        }
+
+        pingsCount++;
+        document.getElementById("valPings").textContent = pingsCount;
+        document.getElementById("valLastSync").textContent = new Date().toLocaleTimeString();
+
+        updateStatus("transmitting", "Broadcasting to Laptop", `Streaming Network Location (${locality}) to AgriVersion!`, "fa-broadcast-tower");
+
+        // Send to backend
+        await fetch("/api/location/session/update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            session_id: sessionId,
+            lat: lat,
+            lng: lng,
+            accuracy: 100,
+            device_info: `${navigator.userAgent} [Network/IP Fallback]`
+          })
+        });
+
+      } catch (err) {
+        console.error("Network fallback failed:", err);
+        updateStatus("error", "Location Sync Paused", "Tap a district below to transmit your location instantly.", "fa-map-marker-alt");
+        reportStatusToBackend("denied", reason);
+      }
+    }
+
+    async function transmitManualLocation(lat, lng, name) {
+      document.getElementById("valLat").textContent = parseFloat(lat).toFixed(5);
+      document.getElementById("valLng").textContent = parseFloat(lng).toFixed(5);
+      document.getElementById("valLocality").textContent = name;
+      
+      const accEl = document.getElementById("valAccuracy");
+      if (accEl) {
+        accEl.textContent = "± Manual Select";
+        accEl.className = "metric-value text-success";
+      }
+
+      pingsCount++;
+      document.getElementById("valPings").textContent = pingsCount;
+      document.getElementById("valLastSync").textContent = new Date().toLocaleTimeString();
+
+      updateStatus("transmitting", "Broadcasting to Laptop", `Transmitting ${name} to AgriVersion!`, "fa-broadcast-tower");
+
+      await fetch("/api/location/session/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id: sessionId,
+          lat: parseFloat(lat),
+          lng: parseFloat(lng),
+          accuracy: 50,
+          device_info: `${navigator.userAgent} [Manual Selection: ${name}]`
+        })
+      });
+    }
+
+    async function searchAndTransmitCustomLocation() {
+      const input = document.getElementById("customLocationInput");
+      const query = (input?.value || "").trim();
+      if (!query) return;
+
+      updateStatus("waiting", "Locating " + query + "...", "Searching geographical coordinates for " + query + "...", "fa-spinner fa-spin");
+
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&accept-language=en`);
+        const data = await res.json();
+        if (data && data.length > 0) {
+          const lat = parseFloat(data[0].lat);
+          const lng = parseFloat(data[0].lon);
+          const displayName = data[0].display_name.split(",")[0] + ", " + (data[0].display_name.split(",")[1] || "India").trim();
+          await transmitManualLocation(lat, lng, displayName);
+        } else {
+          // Try weather geocoding endpoint as backup
+          const wRes = await fetch(`/api/weather?location=${encodeURIComponent(query)}`);
+          const wData = await wRes.json();
+          if (wData.success && wData.location) {
+            await transmitManualLocation(wData.location.lat, wData.location.lng, wData.location.name);
+          } else {
+            alert("Could not find coordinates for: " + query + ". Please check spelling.");
+            updateStatus("waiting", "Ready", "Type another town or tap a preset chip.", "fa-map-pin");
+          }
+        }
+      } catch (e) {
+        console.error("Geocoding failed:", e);
+        alert("Search failed. Please check internet connection.");
+      }
+    }
+
+    async function reportStatusToBackend(status, message) {
+      try {
+        await fetch("/api/location/session/status-update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: sessionId, status: status, message: message })
+        });
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    function toggleGps() {
+      const btn = document.getElementById("toggleGpsBtn");
+      isBroadcasting = !isBroadcasting;
+
+      if (isBroadcasting) {
+        btn.innerHTML = '<i class="fas fa-pause me-1"></i> Pause Sharing';
+        btn.className = 'btn btn-sm btn-agri-primary px-3';
+        startGpsTracking();
+      } else {
+        btn.innerHTML = '<i class="fas fa-play me-1"></i> Resume Sharing';
+        btn.className = 'btn btn-sm btn-success px-3';
+        updateStatus("waiting", "Sharing Paused", "GPS transmission is currently paused.", "fa-pause-circle");
+        reportStatusToBackend("paused", "User paused GPS broadcasting");
+      }
+    }
+
+    function requestGpsAgain() {
+      startGpsTracking();
+    }
+  </script>
+</body>
+</html>

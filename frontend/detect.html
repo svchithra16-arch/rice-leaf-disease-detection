@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detect Disease - AgriVersion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/assets/css/animations.css">
+  <style>
+    .badge-conf-high { background: #10b981; color: #ffffff; }
+    .badge-conf-moderate { background: #f59e0b; color: #ffffff; }
+    .badge-conf-low { background: #ef4444; color: #ffffff; }
+    .xai-thumb { max-height: 180px; width: 100%; object-fit: contain; background: #000; border-radius: var(--radius-md); border: 1px solid var(--border-glass); }
+    .metric-card-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-md); }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar Placeholder -->
+  <div id="navbarPlaceholder"></div>
+
+  <div class="container py-4">
+    <div class="mb-4">
+      <h2 class="text-white fw-bold mb-1" data-i18n="detect.title">Rice Leaf Pathology & Explainable AI Diagnosis</h2>
+      <p class="text-muted mb-0" data-i18n="detect.subtitle">
+        Upload a clear photograph of a rice leaf blade for automated neural pathology screening, lesion area analysis, and Grad-CAM interpretability
+      </p>
+    </div>
+
+    <!-- Upload Box & Field Association -->
+    <div class="glass-card mb-4 p-4">
+      <div class="row g-4 align-items-center">
+        <div class="col-lg-8">
+          <div class="drop-zone" id="dropZone">
+            <input type="file" id="leafFileInput" accept="image/*" class="d-none">
+            
+            <div id="dropPrompt">
+              <div class="drop-zone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+              <h5 class="text-white mb-1" data-i18n="detect.drop_zone_title">Drag & Drop rice leaf photo here</h5>
+              <p class="text-muted mb-3" style="font-size:0.88rem;" data-i18n="detect.drop_zone_sub">Supports JPG, JPEG, PNG, WEBP (Max 16MB)</p>
+              <div class="d-flex justify-content-center gap-2">
+                <button type="button" class="btn-agri-outline" onclick="event.stopPropagation(); document.getElementById('leafFileInput').click();" data-i18n="detect.browse_btn">
+                  <i class="fas fa-folder-open"></i> Browse Files
+                </button>
+                <a href="/camera.html" class="btn-agri-outline" onclick="event.stopPropagation();" data-i18n="detect.camera_btn">
+                  <i class="fas fa-camera"></i> Use Live Camera
+                </a>
+              </div>
+            </div>
+
+            <!-- Preview Box after selection -->
+            <div id="previewBox" class="d-none text-center">
+              <img id="leafPreviewImg" src="" style="max-height:220px; border-radius:var(--radius-md); border:1px solid var(--border-glass);" alt="Selected Leaf Preview">
+              <div class="mt-3">
+                <button type="button" class="btn btn-sm btn-outline-danger me-2" onclick="event.stopPropagation(); resetUpload();">
+                  <i class="fas fa-times"></i> Remove Image
+                </button>
+                <span class="badge bg-success">Leaf Photo Loaded</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="p-3 rounded mb-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);">
+            <!-- Live Location Geotag Pill -->
+            <div class="d-flex align-items-center justify-content-between p-2 rounded mb-3" style="background:rgba(16,185,129,0.08);border:1px solid rgba(52,211,153,0.25);">
+              <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-map-marker-alt text-emerald"></i>
+                <div>
+                  <small class="text-muted d-block" style="font-size:0.75rem;">Geo-Tag Reference</small>
+                  <b class="text-white" id="detectLiveLocText" style="font-size:0.85rem;">Detecting Location...</b>
+                </div>
+              </div>
+              <button class="btn btn-sm btn-outline-success p-1" title="Refresh Live Location" onclick="refreshDetectLocation()">
+                <i class="fas fa-sync-alt" id="detectLocSpinner"></i>
+              </button>
+            </div>
+
+            <label class="form-label-agri" data-i18n="detect.select_field">Associate with Field / Plot (Optional)</label>
+            <select id="fieldSelect" class="form-select form-control-agri mb-3">
+              <option value="">General Crop Scan</option>
+            </select>
+            <small class="text-muted d-block mb-3">
+              Associating scans with a specific field enables temporal pathology tracking per acreage.
+            </small>
+            <button id="btnAnalyze" class="btn-agri-primary w-100" disabled onclick="startLeafAnalysis()">
+              <i class="fas fa-microscope me-1"></i> <span data-i18n="detect.btn_analyze">Analyze Foliage with AI</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sample Leaf Test Images Gallery (All 20 Rice Conditions) -->
+      <div class="glass-card mb-4 p-4 mt-4">
+        <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+          <div>
+            <h5 class="text-white fw-bold mb-1">
+              <i class="fas fa-download text-emerald me-1"></i> Download Sample Leaf Test Images (All 20 Rice Conditions)
+            </h5>
+            <p class="text-muted mb-0" style="font-size:0.83rem;">
+              Select any of the 20 rice disease and health conditions to download sample leaf images or test uploading them directly.
+            </p>
+          </div>
+          <button type="button" class="btn btn-sm btn-agri-outline" onclick="loadSampleLeavesGallery()">
+            <i class="fas fa-sync-alt"></i> Refresh Samples
+          </button>
+        </div>
+
+        <div class="row g-3 align-items-center mb-3">
+          <div class="col-md-7">
+            <select id="sampleLeafSelect" class="form-select form-control-agri" onchange="previewSampleLeaf(this.value)">
+              <option value="">-- Select Rice Condition Sample (20 Available) --</option>
+            </select>
+          </div>
+          <div class="col-md-5 d-flex gap-2">
+            <a id="btnDownloadSample" href="#" download class="btn-agri-outline w-50 text-center text-decoration-none disabled">
+              <i class="fas fa-download"></i> Download
+            </a>
+            <button id="btnTestSample" type="button" class="btn-agri-primary w-50" disabled onclick="testSelectedSampleLeaf()">
+              <i class="fas fa-microscope"></i> Test Directly
+            </button>
+          </div>
+        </div>
+
+        <div id="samplePreviewContainer" class="d-none text-center p-3 rounded" style="background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.1);">
+          <small class="text-muted d-block mb-2" id="samplePreviewTitle">Sample Leaf Preview</small>
+          <img id="samplePreviewImg" src="" style="max-height:160px; border-radius:var(--radius-md); border:1px solid var(--border-glass);" alt="Sample Leaf Preview">
+        </div>
+      </div>
+
+      <!-- Inference Progress Box -->
+      <div id="progressSection" class="d-none mt-4 p-4 rounded text-center" style="background:rgba(16,185,129,0.06);border:1px solid rgba(52,211,153,0.3);">
+        <div class="spinner-agri mb-3" style="width:36px;height:36px;"></div>
+        <h5 class="text-white fw-bold mb-1">Performing Neural Pathology Screening</h5>
+        <p class="text-muted mb-3" data-i18n="detect.analyzing">Analyzing color spectrum, extracting lesion geometry, calculating Grad-CAM, & evaluating severity...</p>
+        <div class="progress" style="height:8px;max-width:400px;margin:0 auto;">
+          <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width:100%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Diagnostic Results Section -->
+    <div id="resultSection" class="d-none">
+
+      <!-- Closely Matched Prediction Alert -->
+      <div id="closelyMatchedAlertBox" class="alert alert-warning d-none mb-4" role="alert" style="background:rgba(245,158,11,0.15);border:1px solid #f59e0b;color:#fef3c7;">
+        <div class="d-flex align-items-center gap-2">
+          <i class="fas fa-compress-arrows-alt fa-lg text-warning"></i>
+          <div id="closelyMatchedText">
+            <b>Closely Matched Prediction:</b> The model detected overlapping visual symptoms between multiple candidate conditions.
+          </div>
+        </div>
+      </div>
+
+      <!-- Uncertain Prediction Alert -->
+      <div id="uncertainAlertBox" class="alert alert-danger d-none mb-4" role="alert" style="background:rgba(239,68,68,0.15);border:1px solid #ef4444;color:#fee2e2;">
+        <div class="d-flex align-items-center gap-2">
+          <i class="fas fa-question-circle fa-lg text-danger"></i>
+          <div>
+            <b>Uncertain Prediction:</b> Model confidence is below the diagnostic reliability threshold. Expert confirmation or a clearer close-up photograph is recommended.
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <!-- Left Column: Identified Condition, Symptoms & Scientific Recommendations -->
+        <div class="col-lg-7">
+          <div class="glass-card p-4 mb-4">
+
+            <!-- Image Location & Regional Weather Banner -->
+            <div id="resLocationBanner" class="p-3 rounded mb-4 d-none" style="background:rgba(16,185,129,0.08);border:1px solid rgba(52,211,153,0.3);">
+              <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="fs-5">📍</span>
+                    <b class="text-white fs-6" id="resLocationName">Mandya, Karnataka</b>
+                    <span id="resLocationSourceBadge" class="badge bg-dark border border-secondary text-emerald" style="font-size:0.72rem;">Image EXIF GPS</span>
+                  </div>
+                  <small class="text-muted d-block" id="resLocationCoords">Coordinates: 12.5224° N, 76.8972° E</small>
+                </div>
+                <div class="text-end" id="resWeatherBadgeBox">
+                  <div class="badge bg-emerald text-dark px-3 py-1 font-monospace" style="font-size:0.8rem;" id="resWeatherText">🌡️ 28.5°C | 💧 82% Humidity</div>
+                  <small class="text-muted d-block mt-1" id="resOutbreakRiskText">Disease Risk: Moderate</small>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Header: Identified Condition -->
+            <div class="d-flex flex-wrap justify-content-between align-items-start mb-3">
+              <div>
+                <small class="text-muted text-uppercase fw-bold" style="letter-spacing:1px;">IDENTIFIED CONDITION</small>
+                <h2 id="resDiseaseName" class="text-white fw-bold mb-1 mt-1">Brown Spot</h2>
+                <div id="resPathogenBlock">
+                  <span class="text-muted">Causal pathogen: </span>
+                  <b id="resScientificName" class="text-emerald">Bipolaris oryzae</b>
+                  <span class="text-muted ms-2">&bull;</span>
+                  <span id="resPathogenType" class="text-info ms-2">Fungal Pathogen</span>
+                </div>
+              </div>
+              <div class="text-end">
+                <span id="resConfidenceLevelBadge" class="badge badge-conf-high fs-6 px-3 py-2 fw-bold">CONFIDENCE: HIGH</span>
+                <div id="resSeverityBadgeContainer" class="mt-1">
+                  <span id="resSeverityBadge" class="badge badge-sev-low">LOW SEVERITY</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Model Confidence Bar -->
+            <div class="p-3 rounded mb-4 metric-card-box">
+              <div class="d-flex justify-content-between mb-1">
+                <span class="text-white fw-bold" style="font-size:0.9rem;">
+                  <i class="fas fa-brain text-emerald me-1"></i> Model Confidence: <span id="resConfidenceText" class="text-emerald">89.50%</span>
+                </span>
+                <span class="text-muted" style="font-size:0.85rem;">
+                  Confidence Level: <b id="resConfidenceLevelText" class="text-white">High</b>
+                </span>
+              </div>
+              <div class="progress" style="height:10px; border-radius:6px; background:rgba(255,255,255,0.1);">
+                <div id="resConfProgressBar" class="progress-bar bg-success" style="width: 89.5%;"></div>
+              </div>
+              <small class="text-muted d-block mt-2" style="font-size:0.78rem;">
+                <i class="fas fa-info-circle me-1"></i> Model confidence represents algorithmic statistical pattern matching from image screening, not a confirmed laboratory culture.
+              </small>
+            </div>
+
+            <!-- Observed Botanical Symptoms (Dynamically generated from image) -->
+            <div class="mb-4">
+              <h6 class="text-white fw-bold mb-2">
+                <i class="fas fa-microscope text-emerald me-1"></i> OBSERVED SYMPTOMS (From Submitted Image)
+              </h6>
+              <div class="p-3 rounded metric-card-box text-muted" style="font-size:0.92rem; line-height:1.6;" id="resSymptoms">
+                <!-- Populated dynamically based on real image analysis -->
+              </div>
+            </div>
+
+            <!-- Likely Favorable Conditions & Contributing Factors -->
+            <div class="mb-4">
+              <h6 class="text-white fw-bold mb-2">
+                <i class="fas fa-cloud-sun-rain text-warning me-1"></i> LIKELY FAVORABLE CONDITIONS & CONTRIBUTING FACTORS
+              </h6>
+              <div class="p-3 rounded metric-card-box" style="font-size:0.9rem;">
+                <div class="mb-2">
+                  <b class="text-white d-block mb-1">Favorable Environmental Conditions:</b>
+                  <span id="resFavorableConditions" class="text-muted">Warm temperatures (25–30°C), high relative humidity, and prolonged leaf wetness.</span>
+                </div>
+                <div>
+                  <b class="text-white d-block mb-1">Possible Contributing Agronomic Factors:</b>
+                  <span id="resContributingFactors" class="text-muted">Soil nutrient deficiencies (potassium, silicon), water stress, and infected seed stock.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Prevention & Evidence-Based Management -->
+            <div class="p-3 rounded mb-4" style="background:rgba(16,185,129,0.05);border:1px solid rgba(52,211,153,0.25);">
+              <h6 class="text-white fw-bold mb-2">
+                <i class="fas fa-shield-alt text-emerald me-1"></i> PREVENTIVE CULTURAL PRACTICES
+              </h6>
+              <p id="resPrevention" class="text-muted mb-3" style="font-size:0.9rem; line-height:1.5;"></p>
+
+              <h6 class="text-white fw-bold mb-2">
+                <i class="fas fa-tasks text-info me-1"></i> EVIDENCE-BASED INTEGRATED MANAGEMENT
+              </h6>
+              <p id="resManagement" class="text-muted mb-3" style="font-size:0.9rem; line-height:1.5;"></p>
+
+              <h6 class="text-white fw-bold mb-2">
+                <i class="fas fa-user-md text-warning me-1"></i> WHEN TO CONSULT AN AGRICULTURAL EXPERT
+              </h6>
+              <p id="resExpertConsultation" class="text-muted mb-0" style="font-size:0.9rem; line-height:1.5;"></p>
+            </div>
+
+            <!-- Registered Active Ingredients & Local Stores Preview -->
+            <div class="glass-card p-3 mb-4" style="background:rgba(6,95,70,0.15);border:1px solid rgba(52,211,153,0.35);">
+              <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="fs-5">🏪</span>
+                  <h6 class="text-white fw-bold mb-0">Recommended Management Category & Registered Inputs</h6>
+                </div>
+                <span class="badge bg-success" style="font-size:0.75rem;">Advisory Overview</span>
+              </div>
+
+              <div class="mb-2" style="font-size:0.88rem;">
+                <span class="text-muted">Management Category:</span>
+                <b class="text-emerald d-block mt-1" id="resProductCategory">Registered Products for Target Condition</b>
+              </div>
+
+              <div class="mb-3">
+                <small class="text-muted d-block mb-1">Officially Registered Active Ingredients & Dosage Guidelines:</small>
+                <div id="resActiveIngredientsList" class="d-flex flex-wrap gap-1">
+                  <!-- Populated dynamically -->
+                </div>
+              </div>
+
+              <div id="nearbyStoresPreviewSection" class="mb-3 d-none">
+                <small class="text-muted d-block mb-2">Participating Stores Near You Reporting Inventory:</small>
+                <div id="nearbyStoresPreviewList" class="d-flex flex-column gap-2">
+                  <!-- Populated dynamically -->
+                </div>
+              </div>
+
+              <a id="btnFindNearbyStores" href="/stores.html" class="btn-agri-primary w-100 text-center text-decoration-none">
+                <i class="fas fa-map-marker-alt me-1"></i> <span>📍 Find Nearby Agricultural Input Stores</span>
+              </a>
+            </div>
+
+            <!-- Agricultural Safety & Screening Disclaimer Notice -->
+            <div class="p-3 rounded mb-4" style="background:rgba(245,158,11,0.08);border-left:4px solid #f59e0b;font-size:0.82rem;color:#fef3c7;">
+              <i class="fas fa-exclamation-triangle text-warning me-1"></i>
+              <b>IMPORTANT AGRICULTURAL SAFETY NOTICE:</b>
+              This automated AI screening provides image-based pattern analysis and is not a definitive microbiological laboratory test. Chemical interventions must strictly adhere to product label instructions, pre-harvest intervals, and local agricultural authority regulations. Do not apply unauthorized pesticides without professional agronomic confirmation.
+            </div>
+
+            <!-- Action Toolbar -->
+            <div class="d-flex flex-wrap gap-2">
+              <a id="btnDownloadReport" href="#" target="_blank" class="btn-agri-primary">
+                <i class="fas fa-file-pdf"></i> <span>Download Diagnostic PDF Report</span>
+              </a>
+              <button class="btn-agri-outline" onclick="speakDiagnosis()">
+                <i class="fas fa-volume-up"></i> <span>Listen to Findings (TTS)</span>
+              </button>
+              <button class="btn-agri-outline" onclick="openInChat()">
+                <i class="fas fa-robot"></i> <span>Ask RiceCare AI</span>
+              </button>
+              <button class="btn btn-outline-secondary" onclick="resetUpload()">
+                <i class="fas fa-redo"></i> <span>Scan Another Leaf</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Quantitative Lesion Analytics, 3-Image Grad-CAM, & Top Predictions -->
+        <div class="col-lg-5">
+          
+          <!-- Quantitative Color Segmentation & Lesion Area Analysis -->
+          <div class="glass-card p-4 mb-4">
+            <h5 class="text-white fw-bold mb-2">
+              <i class="fas fa-chart-pie text-emerald me-1"></i> VISIBLE LESION ANALYSIS
+            </h5>
+            <p class="text-muted mb-3" style="font-size:0.83rem;">
+              Quantitative computer vision segmentation estimating visible canopy ratio and discrete lesion sites.
+            </p>
+
+            <div class="p-3 rounded mb-3 metric-card-box">
+              <div class="row text-center gy-2">
+                <div class="col-4 border-end" style="border-color:rgba(255,255,255,0.1) !important;">
+                  <small class="text-muted d-block">Estimated Visible Healthy Area</small>
+                  <div id="resHealthyArea" class="text-success fw-bold fs-5 mt-1">--%</div>
+                </div>
+                <div class="col-4 border-end" style="border-color:rgba(255,255,255,0.1) !important;">
+                  <small class="text-muted d-block">Estimated Visible Lesion Area</small>
+                  <div id="resAffectedArea" class="text-warning fw-bold fs-5 mt-1">--%</div>
+                </div>
+                <div class="col-4">
+                  <small class="text-muted d-block">Estimated Visible Lesion Count</small>
+                  <div id="resLesionCount" class="text-info fw-bold fs-5 mt-1">--</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Segmented Mask View -->
+            <div class="text-center">
+              <small class="text-muted d-block mb-1">Color Segmented Pathology Mask (Green: Healthy, Red: Lesions)</small>
+              <img id="resMaskImg" src="" class="img-fluid rounded" style="max-height:160px; border:1px solid var(--border-glass);" alt="Segmented Pathology Mask">
+            </div>
+          </div>
+
+          <!-- Explainable AI (Grad-CAM) Visualizer (3-Image Display) -->
+          <div class="glass-card p-4 mb-4">
+            <h5 class="text-white fw-bold mb-2">
+              <i class="fas fa-eye text-emerald me-1"></i> EXPLAINABLE AI (Grad-CAM)
+            </h5>
+            <p class="text-muted mb-3" style="font-size:0.83rem;">
+              Thermal activation heatmaps derived from neural network convolutional feature activations showing regions contributing to the diagnosis.
+            </p>
+
+            <div class="row g-2 text-center mb-2">
+              <div class="col-4">
+                <small class="text-muted d-block mb-1" style="font-size:0.75rem;">Original Leaf</small>
+                <img id="resOriginalImg" src="" class="xai-thumb" alt="Original Leaf Specimen">
+              </div>
+              <div class="col-4">
+                <small class="text-warning d-block mb-1" style="font-size:0.75rem;">AI Attention Map</small>
+                <img id="resGradcamPureImg" src="" class="xai-thumb" alt="Pure Attention Heatmap">
+              </div>
+              <div class="col-4">
+                <small class="text-emerald d-block mb-1" style="font-size:0.75rem;">Overlay</small>
+                <img id="resGradcamOverlayImg" src="" class="xai-thumb" alt="Grad-CAM Overlay">
+              </div>
+            </div>
+            <small id="gradcamNotice" class="text-muted d-block text-center mt-2" style="font-size:0.75rem;">
+              Warm colors (Red/Yellow) highlight focal regions with maximum neural gradient activation.
+            </small>
+          </div>
+
+          <!-- Top Predictions Ranking (Model Transparency) -->
+          <div class="glass-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="text-white fw-bold mb-0">TOP PREDICTIONS</h5>
+              <span class="badge bg-secondary" style="font-size:0.75rem;">Softmax Ranking</span>
+            </div>
+            <p class="text-muted mb-3" style="font-size:0.82rem;">
+              Complete model candidate distribution showing relative posterior probabilities.
+            </p>
+            <div class="table-responsive">
+              <table class="table table-dark table-sm align-middle mb-0" style="background:transparent;">
+                <tbody id="resTopPredictionsTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Placeholder -->
+  <div id="footerPlaceholder"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/i18n.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script src="/assets/js/voice.js"></script>
+  <script src="/assets/js/detect.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      AgriApp.renderNavbar();
+      AgriApp.renderFooter();
+    });
+  </script>
+</body>
+</html>

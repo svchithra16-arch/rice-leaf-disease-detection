@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RiceCare AI Multimodal Assistant - AgriVersion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/assets/css/chatbot.css">
+  <link rel="stylesheet" href="/assets/css/animations.css">
+</head>
+<body>
+
+  <!-- Navbar Placeholder -->
+  <div id="navbarPlaceholder"></div>
+
+  <div class="chat-layout">
+    <!-- Left Sidebar: Conversation History -->
+    <aside class="chat-sidebar" id="chatSidebar">
+      <div class="chat-sidebar-header">
+        <button class="btn-new-chat" onclick="startNewConversation()">
+          <i class="fas fa-plus"></i> <span data-i18n="chat.new_chat">New Conversation</span>
+        </button>
+        <div class="chat-search-wrap">
+          <i class="fas fa-search chat-search-icon"></i>
+          <input type="text" id="chatSearchInput" class="chat-search-input" placeholder="Search conversations..." data-i18n-placeholder="chat.search_chats">
+        </div>
+      </div>
+
+      <div class="chat-history-list" id="chatHistoryList">
+        <div class="text-center text-muted p-3" style="font-size:0.85rem;">Loading conversations...</div>
+      </div>
+
+      <div class="chat-sidebar-footer">
+        <button class="btn-sidebar-footer" onclick="openChatSettingsModal()">
+          <i class="fas fa-sliders-h"></i> <span>Model & API Settings</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Chat Container -->
+    <main class="chat-main">
+      <!-- Top Chat Header & AI Controls -->
+      <div class="chat-header">
+        <div class="chat-title-info">
+          <button class="btn btn-sm btn-outline-secondary d-md-none me-2" onclick="document.getElementById('chatSidebar').classList.toggle('open')">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="brand-icon">🌾</div>
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <h5 class="text-white fw-bold mb-0" data-i18n="chat.title">RiceCare AI</h5>
+              <span class="badge-status-online" title="High Accuracy Agronomic Reasoning Engine Active">
+                <span class="status-dot"></span> Accurate Guard
+              </span>
+            </div>
+            <small class="text-muted">Vision-Enabled Conversational Agronomist & Crop Pathologist</small>
+          </div>
+        </div>
+
+        <!-- Top Right Control Toolbar -->
+        <div class="d-flex align-items-center gap-2">
+          <!-- AI Model Selector Dropdown -->
+          <div class="dropdown model-picker-dropdown">
+            <button class="btn btn-sm btn-model-select dropdown-toggle" type="button" id="modelSelectBtn" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-robot text-emerald me-1"></i> <span id="currentModelLabel">RiceCare AI (Auto)</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end chat-dropdown-menu" aria-labelledby="modelSelectBtn" id="modelSelectDropdownList">
+              <li><a class="dropdown-item active" href="javascript:void(0)" onclick="selectAiModel('auto', '🌾 RiceCare AI (Auto)')">🌾 RiceCare AI (Auto / Accurate)</a></li>
+              <li><a class="dropdown-item" href="javascript:void(0)" onclick="selectAiModel('gemini-2.0-flash', '⚡ Gemini 2.0 Flash')">⚡ Google Gemini 2.0 Flash</a></li>
+              <li><a class="dropdown-item" href="javascript:void(0)" onclick="selectAiModel('gpt-4o-mini', '🧠 OpenAI GPT-4o Mini')">🧠 OpenAI GPT-4o Mini</a></li>
+              <li><a class="dropdown-item" href="javascript:void(0)" onclick="selectAiModel('groq-llama-3.3', '🚀 Groq Llama 3.3 (70B)')">🚀 Groq Llama 3.3 (70B)</a></li>
+              <li><a class="dropdown-item" href="javascript:void(0)" onclick="selectAiModel('builtin-rag', '🔬 Built-in Expert Engine')">🔬 Built-in Expert Engine (Offline)</a></li>
+            </ul>
+          </div>
+
+          <!-- Export Chat Transcript -->
+          <button class="btn btn-sm btn-outline-glass" onclick="exportCurrentConversation()" title="Export Conversation as Report">
+            <i class="fas fa-file-export"></i>
+          </button>
+
+          <!-- Settings Button -->
+          <button class="btn btn-sm btn-outline-glass" onclick="openChatSettingsModal()" title="AI & API Key Settings">
+            <i class="fas fa-cog"></i>
+          </button>
+
+          <!-- Voice Listening Wave Indicator -->
+          <div id="voiceListeningWave" class="d-none voice-wave-container" title="Listening to speech...">
+            <span class="voice-wave-bar"></span>
+            <span class="voice-wave-bar"></span>
+            <span class="voice-wave-bar"></span>
+            <span class="voice-wave-bar"></span>
+            <span class="voice-wave-bar"></span>
+            <small class="text-danger fw-bold ms-1" style="font-size:0.75rem;" data-i18n="chat.listening">Listening...</small>
+          </div>
+
+          <!-- Mute/Stop Audio -->
+          <button class="btn btn-sm btn-outline-danger" onclick="AgriVoice.stopSpeaking()" title="Stop Audio">
+            <i class="fas fa-volume-mute"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages Stream -->
+      <div class="chat-messages-container" id="chatMessages">
+        <!-- Rendered dynamically by chat.js -->
+      </div>
+
+      <!-- Attached Image Previews Strip (Above composer) -->
+      <div class="chat-attachment-previews" id="chatAttachmentPreviews"></div>
+
+      <!-- Bottom Composer Toolbar -->
+      <div class="chat-composer-wrapper">
+        <div class="chat-composer-box">
+          <input type="file" id="chatImageFileInput" multiple accept="image/*" class="d-none">
+
+          <!-- Composer Tool Buttons -->
+          <div class="chat-composer-actions">
+            <button type="button" class="btn-composer-tool" title="Attach Leaf Images for Deep CNN Analysis" onclick="document.getElementById('chatImageFileInput').click()">
+              <i class="fas fa-paperclip"></i>
+            </button>
+            <a href="/camera.html" class="btn-composer-tool" title="Take Leaf Photo with Live Camera">
+              <i class="fas fa-camera"></i>
+            </a>
+            <button type="button" id="btnVoiceMic" class="btn-composer-tool" title="Voice Input (Speech-to-Text)" onclick="toggleVoiceRecognition()">
+              <i class="fas fa-microphone"></i>
+            </button>
+          </div>
+
+          <!-- Textarea Input -->
+          <textarea id="chatInput" rows="1" class="chat-textarea" placeholder="Ask any rice farming question, calculate fertilizer dosage, or describe leaf symptoms..." data-i18n-placeholder="chat.type_placeholder"></textarea>
+
+          <!-- Send / Stop Button -->
+          <button type="button" id="btnSendChat" class="btn-send-msg" title="Send Message (Enter)" onclick="sendMessage()">
+            <i class="fas fa-paper-plane" id="sendBtnIcon"></i>
+          </button>
+        </div>
+        <div class="composer-sub-footer">
+          <span>RiceCare AI provides verified agricultural guidance. Cross-check large chemical sprays with local extension advisories.</span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Chat Settings & API Keys Modal -->
+  <div class="modal fade" id="chatSettingsModal" tabindex="-1" aria-labelledby="chatSettingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content chat-modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title text-white fw-bold d-flex align-items-center gap-2" id="chatSettingsModalLabel">
+            <i class="fas fa-sliders-h text-emerald"></i> AI Model & API Settings
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted small mb-3">
+            Customize your AI Assistant engine. You can provide your own API keys for unrestricted high-speed multimodal reasoning, or use the built-in offline expert agronomy engine.
+          </p>
+
+          <div class="mb-3">
+            <label class="form-label text-white small fw-bold">Active AI Engine</label>
+            <select class="form-select agri-input" id="settingModelSelect">
+              <option value="auto">🌾 RiceCare AI (Auto / High Precision)</option>
+              <option value="gemini-2.0-flash">⚡ Google Gemini 2.0 Flash (Multimodal)</option>
+              <option value="gpt-4o-mini">🧠 OpenAI GPT-4o Mini (ChatGPT)</option>
+              <option value="groq-llama-3.3">🚀 Groq Llama 3.3 (70B Fast Text)</option>
+              <option value="builtin-rag">🔬 Built-in Agronomy Expert RAG Engine (100% Offline)</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-white small fw-bold">Custom Google Gemini API Key (Optional)</label>
+            <input type="password" class="form-control agri-input" id="settingGeminiKey" placeholder="AIzaSy...">
+            <div class="form-text text-muted small">Enables Gemini 2.0 Flash multimodal image & text reasoning.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-white small fw-bold">Custom OpenAI API Key (Optional)</label>
+            <input type="password" class="form-control agri-input" id="settingOpenaiKey" placeholder="sk-proj-...">
+            <div class="form-text text-muted small">Enables GPT-4o and GPT-4o Mini ChatGPT reasoning.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-white small fw-bold">Custom Groq API Key (Optional)</label>
+            <input type="password" class="form-control agri-input" id="settingGroqKey" placeholder="gsk_...">
+            <div class="form-text text-muted small">Enables ultra-fast Llama 3.3 (70B) reasoning.</div>
+          </div>
+
+          <div class="mb-3 form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="settingStreamToggle" checked>
+            <label class="form-check-label text-white small" for="settingStreamToggle">Enable Real-Time ChatGPT-Style Token Streaming</label>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-glass btn-sm" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-emerald btn-sm px-4" onclick="saveChatSettings()">Save Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/i18n.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script src="/assets/js/voice.js"></script>
+  <script src="/assets/js/chat.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      AgriApp.renderNavbar();
+    });
+  </script>
+</body>
+</html>

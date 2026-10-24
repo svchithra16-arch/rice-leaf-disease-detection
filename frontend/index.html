@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriVersion - AI Rice Leaf Disease Detection & Multimodal Agricultural Assistant</title>
+  <meta name="description" content="AI-Powered Multilingual Rice Leaf Disease Detection, Explainable AI (Grad-CAM), Severity Estimation, and RiceCare AI Agricultural Assistant for Farmers and Agronomists.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/assets/css/animations.css">
+</head>
+<body>
+
+  <!-- Navbar Placeholder -->
+  <div id="navbarPlaceholder"></div>
+
+  <!-- Hero Section -->
+  <section class="py-5 position-relative">
+    <div class="container py-4">
+      <div class="row align-items-center gy-5">
+        <div class="col-lg-7">
+          <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3" style="background:rgba(16,185,129,0.12);border:1px solid rgba(52,211,153,0.3);">
+            <span class="badge bg-success" style="font-size:0.75rem;">AI AGRONOMY PLATFORM</span>
+            <small class="text-emerald fw-semibold">20 Rice Pathologies + Grad-CAM + Severity</small>
+          </div>
+          <h1 class="display-4 fw-bold text-white mb-3" style="line-height:1.15;">
+            🌾 AI-Powered <span class="brand-gradient">Rice Leaf Disease</span> Detection & Diagnosis
+          </h1>
+          <p class="lead text-muted mb-4" style="font-size:1.15rem;" data-i18n="tagline">
+            Automated deep-learning diagnosis, Explainable AI (Grad-CAM), lesion severity estimation, and ChatGPT-style multimodal agricultural assistant supporting 8 languages.
+          </p>
+
+          <div class="d-flex flex-wrap gap-3 mb-4">
+            <a href="/detect.html" class="btn-agri-primary" style="padding:0.8rem 1.6rem;font-size:1.05rem;">
+              <i class="fas fa-microscope"></i> <span data-i18n="nav.detect">Detect Disease</span>
+            </a>
+            <a href="/camera.html" class="btn-agri-outline" style="padding:0.8rem 1.6rem;font-size:1.05rem;">
+              <i class="fas fa-camera"></i> <span data-i18n="nav.camera">Live Camera Scan</span>
+            </a>
+            <a href="/chat.html" class="btn-agri-outline" style="padding:0.8rem 1.6rem;font-size:1.05rem;">
+              <i class="fas fa-robot"></i> <span data-i18n="nav.chat">RiceCare AI</span>
+            </a>
+          </div>
+
+          <!-- Feature Badges -->
+          <div class="row g-3 pt-2">
+            <div class="col-sm-4">
+              <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-check-circle text-emerald fs-5"></i>
+                <small class="text-muted">97.42% Model Accuracy</small>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-language text-emerald fs-5"></i>
+                <small class="text-muted">8 Indian Languages</small>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-microphone-alt text-emerald fs-5"></i>
+                <small class="text-muted">Multilingual Voice STT/TTS</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Hero Feature Card -->
+        <div class="col-lg-5">
+          <div class="glass-card p-4 scan-laser-box" style="border-color:rgba(52,211,153,0.4);">
+            <div class="scan-laser-line"></div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <span class="badge bg-success"><i class="fas fa-bolt me-1"></i> Live Demonstration</span>
+              <span class="badge badge-sev-moderate">MODERATE SEVERITY</span>
+            </div>
+            <div class="text-center py-3">
+              <div class="position-relative d-inline-block">
+                <img src="/assets/images/sample_leaf.jpg" onerror="this.src='https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500&q=80'" class="img-fluid rounded" style="max-height:200px;border:1px solid var(--border-glass);" alt="Rice Leaf Pathology">
+                <div class="position-absolute bottom-0 start-0 m-2 px-2 py-1 rounded" style="background:rgba(0,0,0,0.7);font-size:0.75rem;color:#34d399;">
+                  Grad-CAM Attention Area: 27.5%
+                </div>
+              </div>
+            </div>
+            <div class="p-3 rounded mb-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <b class="text-white fs-6">Rice Blast (Magnaporthe oryzae)</b>
+                <span class="text-emerald fw-bold">95.42%</span>
+              </div>
+              <div class="progress" style="height:6px;">
+                <div class="progress-bar bg-success" style="width:95.42%"></div>
+              </div>
+              <small class="text-muted mt-2 d-block">Spindle-shaped lesions with gray centers and necrotic margins.</small>
+            </div>
+            <div class="d-grid gap-2">
+              <a href="/login.html" class="btn-agri-primary text-center">
+                <i class="fas fa-sign-in-alt me-1"></i> Sign In to Diagnose Your Paddy Field
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 20 Disease Showcase Grid -->
+  <section class="py-5" style="background:rgba(11,21,18,0.5);border-top:1px solid var(--border-glass);border-bottom:1px solid var(--border-glass);">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="fw-bold text-white mb-2">Comprehensive 20 Rice Disease Pathology Library</h2>
+        <p class="text-muted">Trained and validated on multi-regional paddy disease datasets for high diagnostic precision.</p>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-3 col-sm-6">
+          <div class="glass-card p-3 h-100">
+            <span class="badge bg-success mb-2">Clean Crop</span>
+            <h6 class="text-white mb-1">Healthy Rice Leaf</h6>
+            <small class="text-muted">Zero lesions, 100% chlorophyll</small>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="glass-card p-3 h-100">
+            <span class="badge bg-danger mb-2">Bacterial</span>
+            <h6 class="text-white mb-1">Bacterial Leaf Blight</h6>
+            <small class="text-muted">Xanthomonas oryzae pv. oryzae</small>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="glass-card p-3 h-100">
+            <span class="badge bg-danger mb-2">Fungal</span>
+            <h6 class="text-white mb-1">Rice Blast</h6>
+            <small class="text-muted">Magnaporthe oryzae</small>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="glass-card p-3 h-100">
+            <span class="badge bg-danger mb-2">Fungal</span>
+            <h6 class="text-white mb-1">Brown Spot</h6>
+            <small class="text-muted">Bipolaris oryzae</small>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="glass-card p-3 h-100">
+            <span class="badge bg-warning text-dark mb-2">Fungal</span>
+            <h6 class="text-white mb-1">Sheath Blight</h6>
+            <small class="text-muted">Rhizoctonia solani</small>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="glass-card p-3 h-100">
+            <span class="badge bg-warning text-dark mb-2">Fungal</span>
+            <h6 class="text-white mb-1">False Smut</h6>
+            <small class="text-muted">Ustilaginoidea virens</small>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="glass-card p-3 h-100">
+            <span class="badge bg-info text-dark mb-2">Viral</span>
+            <h6 class="text-white mb-1">Tungro Disease</h6>
+            <small class="text-muted">Vector: Green Leafhopper</small>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="glass-card p-3 h-100">
+            <span class="badge bg-secondary mb-2">Insect Pest</span>
+            <h6 class="text-white mb-1">Rice Hispa Damage</h6>
+            <small class="text-muted">Dicladispa armigera</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <small class="text-muted">+ 12 additional classes: Bacterial Leaf Streak, Bakanae, Sheath Rot, Narrow Brown Spot, Stem Borer, Grassy Stunt, Ragged Stunt, Panicle Blight, Dirty Panicle, Kernel Smut, Udbatta.</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Pillars Section -->
+  <section class="py-5">
+    <div class="container py-3">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="glass-card h-100 p-4">
+            <div class="brand-icon mb-3">🔬</div>
+            <h4 class="text-white mb-2">Explainable AI (Grad-CAM)</h4>
+            <p class="text-muted" style="font-size:0.92rem;">
+              Transparent deep neural network inference displaying gradient heatmaps overlaid onto leaf lesions, providing visual proof of what features guided the diagnosis.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="glass-card h-100 p-4">
+            <div class="brand-icon mb-3">🤖</div>
+            <h4 class="text-white mb-2">RiceCare Multimodal AI</h4>
+            <p class="text-muted" style="font-size:0.92rem;">
+              ChatGPT-like conversational experience accepting single or multiple leaf image attachments, comparative analysis, and persistent conversation memory.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="glass-card h-100 p-4">
+            <div class="brand-icon mb-3">🎙️</div>
+            <h4 class="text-white mb-2">Multilingual Voice Assistant</h4>
+            <p class="text-muted" style="font-size:0.92rem;">
+              Speak agricultural queries in Kannada, Telugu, Hindi, Tamil, Malayalam, Marathi, Bengali, or English and listen to spoken audio advice.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Placeholder -->
+  <div id="footerPlaceholder"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/i18n.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      AgriApp.renderNavbar();
+      AgriApp.renderFooter();
+      AgriApp.checkAuth(false);
+    });
+  </script>
+</body>
+</html>

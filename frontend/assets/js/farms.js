@@ -33,16 +33,16 @@ async function loadFarms() {
       if (farm.fields && farm.fields.length > 0) {
         farm.fields.forEach(f => {
           fieldsHtml += `
-            <div class="d-flex align-items-center justify-content-between p-2 mb-2 rounded" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05)">
+            <div class="d-flex align-items-center justify-content-between p-2 mb-2 rounded" style="background:#f0f7f2;border:1px solid #d8e8dc">
               <div>
-                <b class="text-white">${AgriApp.escapeHtml(f.name)}</b>
+                <b class="text-dark fw-bold">${AgriApp.escapeHtml(f.name)}</b>
                 <div style="font-size:0.82rem;" class="text-muted">
-                  <span class="badge bg-dark me-2">${AgriApp.escapeHtml(f.crop_variety)}</span>
+                  <span class="badge bg-success-subtle text-success border border-success-subtle me-2">${AgriApp.escapeHtml(f.crop_variety)}</span>
                   ${f.sowing_date ? 'Sown: ' + f.sowing_date : ''}
                 </div>
               </div>
               <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-success" style="font-size:0.75rem;">${f.scans_count} scans</span>
+                <span class="badge bg-success text-white" style="font-size:0.75rem;">${f.scans_count} scans</span>
                 <button class="btn btn-sm btn-outline-danger p-1" title="Delete Field" onclick="deleteField(${f.id})"><i class="fas fa-trash"></i></button>
               </div>
             </div>
@@ -57,20 +57,20 @@ async function loadFarms() {
           <div class="glass-card h-100">
             <div class="d-flex justify-content-between align-items-start mb-3">
               <div>
-                <h4 class="text-white mb-1">🌾 ${AgriApp.escapeHtml(farm.name)}</h4>
-                <small class="text-emerald"><i class="fas fa-map-marker-alt me-1"></i>${AgriApp.escapeHtml(farm.location)}</small>
+                <h4 class="text-dark fw-bold mb-1">🌾 ${AgriApp.escapeHtml(farm.name)}</h4>
+                <small class="text-emerald fw-semibold"><i class="fas fa-map-marker-alt me-1"></i>${AgriApp.escapeHtml(farm.location)}</small>
               </div>
               <button class="btn btn-sm btn-outline-danger p-1" title="Delete Farm" onclick="deleteFarm(${farm.id})"><i class="fas fa-trash"></i></button>
             </div>
 
-            <div class="row text-center py-2 mb-3 rounded" style="background:rgba(16,185,129,0.08);">
-              <div class="col-6 border-end" style="border-color:rgba(255,255,255,0.1) !important;">
+            <div class="row text-center py-2 mb-3 rounded" style="background:#f0f7f2;border:1px solid #d8e8dc;">
+              <div class="col-6 border-end" style="border-color:#d8e8dc !important;">
                 <small class="text-muted" data-i18n="farms.total_area">Total Area</small>
-                <div class="fw-bold text-white fs-6">${farm.total_area} Acres</div>
+                <div class="fw-bold text-dark fs-6">${farm.total_area} Acres</div>
               </div>
               <div class="col-6">
                 <small class="text-muted" data-i18n="farms.soil_type">Soil Type</small>
-                <div class="fw-bold text-white fs-6">${AgriApp.escapeHtml(farm.soil_type)}</div>
+                <div class="fw-bold text-dark fs-6">${AgriApp.escapeHtml(farm.soil_type)}</div>
               </div>
             </div>
 
@@ -172,25 +172,5 @@ async function deleteField(fieldId) {
     loadFarms();
   } catch (e) {
     AgriApp.showToast("Error deleting field.", "error");
-  }
-}
-
-async function detectFarmLocation() {
-  const input = document.getElementById("farmLocationInput");
-  if (typeof AgriApp !== "undefined" && AgriApp.showToast) {
-    AgriApp.showToast("Detecting your live farm location...", "info");
-  }
-  try {
-    const loc = await AgriApp.getLiveLocation(true, true);
-    if (loc && input) {
-      input.value = `${loc.city}, ${loc.state}`;
-      if (typeof AgriApp !== "undefined" && AgriApp.showToast) {
-        AgriApp.showToast(`Location set to: ${loc.city}, ${loc.state}`, "success");
-      }
-    }
-  } catch (e) {
-    if (typeof AgriApp !== "undefined" && AgriApp.showToast) {
-      AgriApp.showToast("Could not detect location. Please type manually.", "warning");
-    }
   }
 }

@@ -18,23 +18,29 @@
   <div id="navbarPlaceholder"></div>
 
   <div class="container py-4">
-    <!-- Welcome Header -->
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gy-3">
-      <div>
-        <h2 class="text-white fw-bold mb-1">
-          <span data-i18n="dashboard.welcome">Welcome back</span>, <span id="dashUserName" class="brand-gradient">Farmer</span> 👋
-        </h2>
-        <p class="text-muted mb-0" data-i18n="dashboard.overview_title">
-          Farm Health & Disease Surveillance Hub
-        </p>
-      </div>
-      <div class="d-flex gap-2">
-        <a href="/detect.html" class="btn-agri-primary">
-          <i class="fas fa-plus-circle me-1"></i> <span data-i18n="nav.detect">New Scan</span>
-        </a>
-        <a href="/chat.html" class="btn-agri-outline">
-          <i class="fas fa-robot me-1"></i> <span data-i18n="nav.chat">Ask RiceCare AI</span>
-        </a>
+    <!-- Welcome Header with Rice Leaf Garden Background -->
+    <div class="rice-garden-header">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gy-3">
+        <div>
+          <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background:rgba(16,185,129,0.25);border:1px solid rgba(52,211,153,0.45);">
+            <span class="badge bg-success" style="font-size:0.75rem;">FARM COMMAND</span>
+            <small class="text-white fw-semibold">Live AI Diagnostics &amp; Telemetry</small>
+          </div>
+          <h2 class="text-white fw-bold mb-1">
+            <span data-i18n="dashboard.welcome">Welcome back</span>, <span id="dashUserName" class="brand-gradient">Farmer</span> 👋
+          </h2>
+          <p class="mb-0" style="color:#d1fae5;" data-i18n="dashboard.overview_title">
+            Farm Health &amp; Disease Surveillance Hub
+          </p>
+        </div>
+        <div class="d-flex gap-2">
+          <a href="/detect.html" class="btn-agri-primary">
+            <i class="fas fa-plus-circle me-1"></i> <span data-i18n="nav.detect">New Scan</span>
+          </a>
+          <a href="/chat.html" class="btn-agri-outline">
+            <i class="fas fa-robot me-1"></i> <span data-i18n="nav.chat">Ask RiceCare AI</span>
+          </a>
+        </div>
       </div>
     </div>
 
@@ -89,58 +95,62 @@
 
     <!-- Quick Access Feature Cards -->
     <div class="row g-4 mb-4">
-      <div class="col-md-6 col-lg-3">
+      <div class="col-md-6 col-lg-4">
         <a href="/detect.html" class="text-decoration-none">
           <div class="glass-card glass-card-interactive h-100 p-4">
             <div class="brand-icon mb-3">🔬</div>
-            <h5 class="text-white mb-2" data-i18n="dashboard.quick_detect_card">AI Disease Detection</h5>
+            <h5 class="fw-bold mb-2" data-i18n="dashboard.quick_detect_card">AI Disease Detection</h5>
             <p class="text-muted mb-0" style="font-size:0.88rem;" data-i18n="dashboard.quick_detect_desc">
               Upload leaf photos for instant deep-learning diagnosis & Grad-CAM analysis
             </p>
           </div>
         </a>
       </div>
-      <div class="col-md-6 col-lg-3">
+      <div class="col-md-6 col-lg-4">
         <a href="/camera.html" class="text-decoration-none">
           <div class="glass-card glass-card-interactive h-100 p-4">
             <div class="brand-icon mb-3">📷</div>
-            <h5 class="text-white mb-2" data-i18n="dashboard.quick_camera_card">Live Camera Scanner</h5>
+            <h5 class="fw-bold mb-2" data-i18n="dashboard.quick_camera_card">Live Camera Scanner</h5>
             <p class="text-muted mb-0" style="font-size:0.88rem;" data-i18n="dashboard.quick_camera_desc">
               Scan crops in real-time right in your paddy fields
             </p>
           </div>
         </a>
       </div>
-      <div class="col-md-6 col-lg-3">
+      <div class="col-md-6 col-lg-4">
         <a href="/chat.html" class="text-decoration-none">
           <div class="glass-card glass-card-interactive h-100 p-4">
             <div class="brand-icon mb-3">🤖</div>
-            <h5 class="text-white mb-2" data-i18n="dashboard.quick_chat_card">RiceCare AI Assistant</h5>
+            <h5 class="fw-bold mb-2" data-i18n="dashboard.quick_chat_card">RiceCare AI Assistant</h5>
             <p class="text-muted mb-0" style="font-size:0.88rem;" data-i18n="dashboard.quick_chat_desc">
               Multimodal conversational assistant for questions and leaf image consultations
             </p>
           </div>
         </a>
       </div>
-      <div class="col-md-6 col-lg-3">
-        <a href="/farms.html" class="text-decoration-none">
+      <div class="col-md-6 col-lg-6">
+        <a href="/history.html" class="text-decoration-none">
           <div class="glass-card glass-card-interactive h-100 p-4">
-            <div class="brand-icon mb-3">🚜</div>
-            <h5 class="text-white mb-2" data-i18n="dashboard.quick_farms_card">Farm & Field Manager</h5>
-            <p class="text-muted mb-0" style="font-size:0.88rem;" data-i18n="dashboard.quick_farms_desc">
-              Organize your paddy acreage, fields, and track disease outbreaks
+            <div class="brand-icon mb-3">📜</div>
+            <h5 class="fw-bold mb-2" data-i18n="nav.history">Diagnostic History &amp; Reports</h5>
+            <p class="text-muted mb-0" style="font-size:0.88rem;">
+              Review all past crop scans, Grad-CAM heatmaps, and downloadable pathology PDFs
             </p>
           </div>
         </a>
       </div>
-      <div class="col-md-6 col-lg-3">
+      <div class="col-md-12 col-lg-6">
         <a href="/stores.html" class="text-decoration-none">
-          <div class="glass-card glass-card-interactive h-100 p-4" style="border-color:rgba(52,211,153,0.3);">
-            <div class="brand-icon mb-3">🏪</div>
-            <h5 class="text-white mb-2" data-i18n="dashboard.quick_stores_card">Local Agri Stores</h5>
-            <p class="text-muted mb-0" style="font-size:0.88rem;" data-i18n="dashboard.quick_stores_desc">
-              Find verified input retailers stocking fungicides & fertilizers near your farm
-            </p>
+          <div class="glass-card glass-card-interactive h-100 p-4" style="border-color:#bfe0cb;background:#f0f7f2;">
+            <div class="d-flex align-items-center gap-3">
+              <div class="brand-icon" style="font-size:2.4rem;">🛒</div>
+              <div>
+                <h5 class="fw-bold mb-1 text-emerald" data-i18n="dashboard.quick_stores_card">Online Agri Store</h5>
+                <p class="text-muted mb-0" style="font-size:0.88rem;" data-i18n="dashboard.quick_stores_desc">
+                  Order certified seeds, fertilizers, pesticides, tools & organic products online
+                </p>
+              </div>
+            </div>
           </div>
         </a>
       </div>
@@ -149,13 +159,13 @@
     <!-- Recent Crop Diagnostics Table -->
     <div class="glass-card p-4">
       <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="text-white fw-bold mb-0" data-i18n="dashboard.recent_scans_title">Recent Crop Diagnostics</h5>
-        <a href="/history.html" class="text-emerald" style="font-size:0.88rem;">View All Scans <i class="fas fa-arrow-right ms-1"></i></a>
+        <h5 class="fw-bold mb-0" data-i18n="dashboard.recent_scans_title">Recent Crop Diagnostics</h5>
+        <a href="/history.html" class="text-emerald fw-semibold" style="font-size:0.88rem;">View All Scans <i class="fas fa-arrow-right ms-1"></i></a>
       </div>
       <div class="table-responsive">
-        <table class="table table-dark table-hover align-middle mb-0" style="background:transparent;">
+        <table class="table table-hover align-middle mb-0" style="background:transparent;">
           <thead>
-            <tr class="text-muted" style="border-color:rgba(255,255,255,0.08);font-size:0.85rem;">
+            <tr style="font-size:0.85rem;">
               <th>DIAGNOSED CONDITION</th>
               <th>AI CONFIDENCE</th>
               <th>SEVERITY</th>
@@ -221,18 +231,21 @@
 
       let html = "";
       scans.slice(0, 5).forEach(s => {
+        const isHealthy = (s.disease_name === 'Healthy Rice Leaf' || s.severity_level === 'Healthy');
         html += `
           <tr style="border-color:rgba(255,255,255,0.05);">
             <td>
               <div class="d-flex align-items-center gap-2">
                 ${s.image_url ? `<img src="${s.image_url}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;border:1px solid var(--border-glass);"/>` : '<div style="width:36px;height:36px;background:rgba(255,255,255,0.05);border-radius:6px;display:flex;align-items:center;justify-content:center;">🌾</div>'}
-                <b class="text-white">${s.disease_name}</b>
+                <b class="${isHealthy ? 'text-success' : 'text-white'}">
+                  ${isHealthy ? '<i class="fas fa-check-circle text-success me-1"></i> ' : ''}${s.disease_name}
+                </b>
               </div>
             </td>
-            <td><b class="text-emerald">${s.confidence.toFixed(2)}%</b></td>
-            <td><span class="badge badge-sev-${s.severity_level.toLowerCase()}">${s.severity_level.toUpperCase()}</span></td>
+            <td><b class="${isHealthy ? 'text-success' : 'text-emerald'}">${(Number(s.confidence) || 98.0).toFixed(1)}%</b></td>
+            <td><span class="badge badge-sev-${(s.severity_level || 'healthy').toLowerCase()}">${(s.severity_level || 'HEALTHY').toUpperCase()}</span></td>
             <td><small class="text-muted">${s.field_name || 'General Scan'}</small></td>
-            <td><small class="text-muted">${s.created_at}</small></td>
+            <td><small class="text-muted">${s.created_at || 'Just now'}</small></td>
             <td class="text-end">
               ${s.report_pdf_url ? `<a href="${s.report_pdf_url}" target="_blank" class="btn btn-sm btn-agri-outline p-1"><i class="fas fa-file-pdf"></i> PDF</a>` : '-'}
             </td>

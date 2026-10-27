@@ -484,6 +484,23 @@ def compute_pathology_probabilities(features, cnn_probs=None):
     # Balanced Fusion: deep neural network feature embeddings + domain botanical guidance
     combined_scores = neural_logits * 2.4 + bot_array * 0.8
 
+    # Botanical Ground Truth Protection for Healthy Rice Leaf:
+    # If the leaf canopy is clean (>82% green), has 0 lesions/spots, and minimal discoloration,
+    # it is morphologically healthy foliage without pathological infection.
+    is_pure_healthy = (
+        g >= 82.0 and
+        les < 1.2 and
+        spots == 0 and
+        blast_spots == 0 and
+        brown_spots == 0 and
+        smut_specks == 0 and
+        b < 1.5 and
+        y < 3.0
+    )
+    if is_pure_healthy:
+        healthy_idx = DISEASE_CLASSES.index("Healthy Rice Leaf")
+        combined_scores[healthy_idx] = np.max(combined_scores) + 8.0
+
     # Calibrated temperature softmax
     temperature = 1.8
     exp_scores = np.exp((combined_scores - np.max(combined_scores)) / temperature)

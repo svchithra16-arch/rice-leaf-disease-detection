@@ -17,24 +17,21 @@ class Config:
     DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "t")
     PORT = int(os.getenv("PORT", 5000))
 
-    # Database with auto-fallback to SQLite if MySQL service is offline
-    _db_uri = os.getenv("DATABASE_URI", "")
-    if _db_uri and "mysql" in _db_uri:
-        import socket
-        try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(0.5)
-            err = s.connect_ex(("127.0.0.1", 3306))
-            s.close()
-            if err == 0:
-                SQLALCHEMY_DATABASE_URI = _db_uri
-            else:
-                print("[AgriVersion] MySQL server offline. Using local SQLite database (agriversion.db).")
-                SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(BASE_DIR, 'agriversion.db')}"
-        except Exception:
-            SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(BASE_DIR, 'agriversion.db')}"
-    else:
-        SQLALCHEMY_DATABASE_URI = _db_uri or f"sqlite:///{os.path.join(BASE_DIR, 'agriversion.db')}"
+    # XAMPP MySQL Database Configuration (localhost:3306, user: root, password: "", db: rice)
+    _default_mysql_uri = "mysql+pymysql://root:@localhost:3306/rice?charset=utf8mb4"
+    _db_uri = os.getenv("DATABASE_URI", _default_mysql_uri)
+    try:
+        import pymysql
+        conn = pymysql.connect(host="localhost", user="root", password="", port=3306, connect_timeout=3)
+        with conn.cursor() as cur:
+            cur.execute("CREATE DATABASE IF NOT EXISTS rice CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
+        conn.commit()
+        conn.close()
+        SQLALCHEMY_DATABASE_URI = _db_uri
+        print("[AgriVersion] Connected to XAMPP MySQL on localhost:3306 (database: rice)")
+    except Exception as _e:
+        print(f"[AgriVersion] XAMPP MySQL unavailable ({_e}). Falling back to local SQLite database.")
+        SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(BASE_DIR, 'agriversion.db')}"
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

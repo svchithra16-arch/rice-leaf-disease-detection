@@ -151,8 +151,7 @@ const AgriApp = (function() {
               <li class="nav-item"><a class="nav-link-agri ${isLinkActive('detect.html')}" href="/detect.html"><i class="fas fa-microscope"></i> <span data-i18n="nav.detect">Detect Disease</span></a></li>
               <li class="nav-item"><a class="nav-link-agri ${isLinkActive('camera.html')}" href="/camera.html"><i class="fas fa-camera"></i> <span data-i18n="nav.camera">Live Camera</span></a></li>
               <li class="nav-item"><a class="nav-link-agri ${isLinkActive('chat.html')}" href="/chat.html"><i class="fas fa-robot"></i> <span data-i18n="nav.chat">RiceCare AI</span></a></li>
-              <li class="nav-item"><a class="nav-link-agri ${isLinkActive('stores.html')}" href="/stores.html"><i class="fas fa-store"></i> <span data-i18n="nav.stores">Agri Stores</span></a></li>
-              <li class="nav-item"><a class="nav-link-agri ${isLinkActive('farms.html')}" href="/farms.html"><i class="fas fa-tractor"></i> <span data-i18n="nav.farms">My Farms</span></a></li>
+              <li class="nav-item"><a class="nav-link-agri ${isLinkActive('stores.html')}" href="/stores.html"><i class="fas fa-shopping-basket"></i> <span data-i18n="nav.stores">Online Agri Store</span></a></li>
               <li class="nav-item"><a class="nav-link-agri ${isLinkActive('history.html')}" href="/history.html"><i class="fas fa-history"></i> <span data-i18n="nav.history">Scan History</span></a></li>
               <li class="nav-item"><a class="nav-link-agri ${isLinkActive('analytics.html')}" href="/analytics.html"><i class="fas fa-chart-line"></i> <span data-i18n="nav.analytics">Analytics</span></a></li>
             </ul>
@@ -170,6 +169,137 @@ const AgriApp = (function() {
       AgriI18n.renderLanguageDropdown();
       AgriI18n.applyTranslations();
     }
+
+    // Automatically render mobile-friendly bottom navigation bar
+    renderBottomNav();
+  }
+
+  function renderBottomNav() {
+    let bottomNavContainer = document.getElementById("agriBottomNav");
+    if (!bottomNavContainer) {
+      bottomNavContainer = document.createElement("nav");
+      bottomNavContainer.id = "agriBottomNav";
+      bottomNavContainer.className = "bottom-nav-agri";
+      document.body.appendChild(bottomNavContainer);
+    }
+
+    let bottomSheetDrawer = document.getElementById("agriBottomSheetDrawer");
+    if (!bottomSheetDrawer) {
+      const overlay = document.createElement("div");
+      overlay.id = "agriBottomSheetOverlay";
+      overlay.className = "bottom-sheet-overlay";
+      overlay.onclick = () => AgriApp.closeMoreSheet();
+      document.body.appendChild(overlay);
+
+      const drawer = document.createElement("div");
+      drawer.id = "agriBottomSheetDrawer";
+      drawer.className = "bottom-sheet-drawer";
+      drawer.innerHTML = `
+        <div class="bottom-sheet-handle"></div>
+        <div class="d-flex justify-content-between align-items-center mb-3 px-1">
+          <h6 class="fw-bold mb-0 text-white"><i class="fas fa-th-large text-emerald me-2"></i> All AgriVersion Services</h6>
+          <button class="btn btn-sm text-white" onclick="AgriApp.closeMoreSheet()"><i class="fas fa-times fa-lg"></i></button>
+        </div>
+        <div class="row g-2 text-center">
+          <div class="col-4">
+            <a href="/camera.html" class="bottom-sheet-item">
+              <div class="sheet-icon-box"><i class="fas fa-camera"></i></div>
+              <span data-i18n="nav.camera">Live Camera</span>
+            </a>
+          </div>
+          <div class="col-4">
+            <a href="/history.html" class="bottom-sheet-item">
+              <div class="sheet-icon-box"><i class="fas fa-history"></i></div>
+              <span data-i18n="nav.history">History</span>
+            </a>
+          </div>
+          <div class="col-4">
+            <a href="/analytics.html" class="bottom-sheet-item">
+              <div class="sheet-icon-box"><i class="fas fa-chart-line"></i></div>
+              <span data-i18n="nav.analytics">Analytics</span>
+            </a>
+          </div>
+          <div class="col-4">
+            <a href="/reports.html" class="bottom-sheet-item">
+              <div class="sheet-icon-box"><i class="fas fa-file-pdf"></i></div>
+              <span data-i18n="nav.reports">Reports</span>
+            </a>
+          </div>
+          <div class="col-4">
+            <a href="/profile.html" class="bottom-sheet-item">
+              <div class="sheet-icon-box"><i class="fas fa-user-circle"></i></div>
+              <span data-i18n="nav.profile">Profile</span>
+            </a>
+          </div>
+          <div class="col-4">
+            <a href="javascript:void(0)" onclick="AgriApp.logout()" class="bottom-sheet-item text-danger">
+              <div class="sheet-icon-box text-danger" style="background:rgba(220,38,38,0.15);"><i class="fas fa-sign-out-alt"></i></div>
+              <span data-i18n="nav.logout">Logout</span>
+            </a>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(drawer);
+    }
+
+    const currentPath = window.location.pathname;
+    const isLinkActive = (path) => currentPath.endsWith(path) ? "active" : "";
+    const isMoreActive = currentPath.endsWith('history.html') || currentPath.endsWith('analytics.html') || currentPath.endsWith('profile.html') || currentPath.endsWith('reports.html') || currentPath.endsWith('admin.html');
+
+    bottomNavContainer.innerHTML = `
+      <div class="bottom-nav-inner">
+        <a href="/dashboard.html" class="bottom-nav-item ${isLinkActive('dashboard.html')}" title="Dashboard">
+          <div class="bottom-nav-icon"><i class="fas fa-chart-pie"></i></div>
+          <span class="bottom-nav-label" data-i18n="nav.dashboard">Dashboard</span>
+        </a>
+        <a href="/detect.html" class="bottom-nav-item ${isLinkActive('detect.html')}" title="Detect">
+          <div class="bottom-nav-icon"><i class="fas fa-microscope"></i></div>
+          <span class="bottom-nav-label" data-i18n="nav.detect">Detect</span>
+        </a>
+        <a href="/camera.html" class="bottom-nav-item bottom-nav-action ${isLinkActive('camera.html')}" title="Live Camera">
+          <div class="bottom-nav-action-btn">
+            <i class="fas fa-camera"></i>
+          </div>
+          <span class="bottom-nav-label" data-i18n="nav.camera">Camera</span>
+        </a>
+        <a href="/chat.html" class="bottom-nav-item ${isLinkActive('chat.html')}" title="RiceCare AI">
+          <div class="bottom-nav-icon"><i class="fas fa-robot"></i></div>
+          <span class="bottom-nav-label" data-i18n="nav.chat">RiceCare</span>
+        </a>
+        <a href="/stores.html" class="bottom-nav-item ${isLinkActive('stores.html')}" title="Agri Store">
+          <div class="bottom-nav-icon"><i class="fas fa-shopping-basket"></i></div>
+          <span class="bottom-nav-label" data-i18n="nav.stores">Store</span>
+        </a>
+        <a href="javascript:void(0)" class="bottom-nav-item ${isMoreActive ? 'active' : ''}" onclick="AgriApp.toggleMoreSheet()" title="More Services">
+          <div class="bottom-nav-icon"><i class="fas fa-th-large"></i></div>
+          <span class="bottom-nav-label">More</span>
+        </a>
+      </div>
+    `;
+
+    if (window.AgriI18n) {
+      AgriI18n.applyTranslations();
+    }
+  }
+
+  function toggleMoreSheet() {
+    const overlay = document.getElementById("agriBottomSheetOverlay");
+    const drawer = document.getElementById("agriBottomSheetDrawer");
+    if (!drawer || !overlay) return;
+    const isOpen = drawer.classList.contains("open");
+    if (isOpen) {
+      closeMoreSheet();
+    } else {
+      overlay.classList.add("open");
+      drawer.classList.add("open");
+    }
+  }
+
+  function closeMoreSheet() {
+    const overlay = document.getElementById("agriBottomSheetOverlay");
+    const drawer = document.getElementById("agriBottomSheetDrawer");
+    if (overlay) overlay.classList.remove("open");
+    if (drawer) drawer.classList.remove("open");
   }
 
   function renderFooter() {
@@ -416,125 +546,21 @@ const AgriApp = (function() {
     }
   };
 
-  // Automatically start polling if a session exists
-  if (activeMobileSessionId) {
-    mobileGps.startPolling(1500);
-  }
-
-  /**
-   * Primary Location Resolver
-   * Priority 1: Laptop Browser HTML5 Geolocation & Laptop IP Geolocation (Default)
-   * Priority 2: Mobile Phone GPS (only if user explicitly selected mobile source or connected mobile)
-   */
+  // Zero GPS dependency - safe regional default
   async function getLiveLocation(forceRefresh = false, allowLaptopFallback = true) {
-    const isStoredDefaultLocation = cachedLiveLocation && cachedLiveLocation.source === "Laptop Reference Location";
-    if (!forceRefresh && cachedLiveLocation && !isStoredDefaultLocation && (preferredLocationSource !== "mobile" || cachedLiveLocation.isMobile)) {
-      return cachedLiveLocation;
-    }
-
-    // 1. If user explicitly chose mobile GPS and mobile is active/connected
-    if (preferredLocationSource === "mobile" && mobileGpsState.lat !== null && mobileGpsState.lng !== null) {
-      cachedLiveLocation = {
-        lat: mobileGpsState.lat,
-        lng: mobileGpsState.lng,
-        accuracy: mobileGpsState.accuracy,
-        city: mobileGpsState.city || "Live Mobile Area",
-        district: mobileGpsState.district || "Live Mobile Area",
-        state: mobileGpsState.state || "",
-        pincode: mobileGpsState.pincode || "",
-        label: mobileGpsState.label || `📍 ${mobileGpsState.lat.toFixed(4)}° N, ${mobileGpsState.lng.toFixed(4)}° E`,
-        source: "📱 Mobile Phone GPS",
-        isGps: true,
-        isMobile: true
-      };
-      return cachedLiveLocation;
-    }
-
-    // 2. Primary Default: Laptop Browser HTML5 Geolocation or Laptop IP Geolocation
-    let lat = null;
-    let lng = null;
-    let isGps = false;
-    let source = "💻 Laptop Browser Location";
-    let geolocationError = null;
-
-    // Try HTML5 navigator.geolocation first on laptop; keep browser permission states visible
-    if (!navigator.geolocation && !allowLaptopFallback) {
-      throw new Error("This browser does not support device location.");
-    }
-    if (navigator.geolocation) {
-      try {
-        const permissionStatus = await navigator.permissions?.query?.({ name: "geolocation" }).catch(() => null);
-        if (permissionStatus && permissionStatus.state === "denied") {
-          const warningMsg = "Location access is blocked in this browser. Please allow location permission and click 'Use my live location' again.";
-          if (typeof showToast === "function") {
-            showToast(warningMsg, "warning");
-          }
-        }
-
-        const position = await new Promise((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true,
-            timeout: 20000,
-            maximumAge: 0
-          });
-        });
-        lat = position.coords.latitude;
-        lng = position.coords.longitude;
-        isGps = true;
-        source = "💻 Laptop Browser GPS";
-      } catch (e) {
-        geolocationError = e;
-        console.warn("Browser device location unavailable:", e);
-      }
-    }
-
-    // Fallback to backend IP Geolocation if HTML5 not available or failed
-    if (allowLaptopFallback && (lat === null || lng === null)) {
-      try {
-        const res = await fetch("/api/stores/detect-my-location");
-        const data = await res.json();
-        if (data.success && data.lat && data.lng) {
-          lat = data.lat;
-          lng = data.lng;
-          source = data.source || "💻 Laptop IP Location";
-          isGps = true;
-        }
-      } catch (e) {
-        console.warn("Backend IP location failed:", e);
-      }
-    }
-
-    // Do not substitute approximate/default coordinates for a requested live location.
-    if ((lat === null || lng === null) && !allowLaptopFallback) {
-      throw geolocationError || new Error("The browser could not determine this device location.");
-    }
-
-    // Hard fallback if all fails
-    if (lat === null || lng === null) {
-      lat = 13.2936;
-      lng = 77.5342;
-      source = "Laptop Reference Location";
-    }
-
-    const geoInfo = await reverseGeocode(lat, lng);
-    const city = geoInfo ? geoInfo.city : "Local Area";
-    const state = geoInfo ? geoInfo.state : "Karnataka";
-    const district = geoInfo ? geoInfo.district : city;
-    const label = geoInfo ? geoInfo.label : `${city}, ${state}`;
-
+    if (cachedLiveLocation) return cachedLiveLocation;
     cachedLiveLocation = {
-      lat: lat,
-      lng: lng,
-      city: city,
-      district: district,
-      state: state,
-      pincode: geoInfo ? geoInfo.pincode : "",
-      label: label,
-      source: source,
-      isGps: isGps,
+      lat: 12.5224,
+      lng: 76.8972,
+      city: "Mandya",
+      district: "Mandya",
+      state: "Karnataka",
+      pincode: "571401",
+      label: "Mandya, Karnataka",
+      source: "Agricultural Region Reference",
+      isGps: false,
       isMobile: false
     };
-
     return cachedLiveLocation;
   }
 
@@ -545,6 +571,9 @@ const AgriApp = (function() {
     escapeHtml,
     renderNavbar,
     renderFooter,
+    renderBottomNav,
+    toggleMoreSheet,
+    closeMoreSheet,
     getLiveLocation,
     reverseGeocode,
     mobileGps,

@@ -25,11 +25,25 @@
   <div id="navbarPlaceholder"></div>
 
   <div class="container py-4">
-    <div class="mb-4">
-      <h2 class="text-white fw-bold mb-1" data-i18n="detect.title">Rice Leaf Pathology & Explainable AI Diagnosis</h2>
-      <p class="text-muted mb-0" data-i18n="detect.subtitle">
-        Upload a clear photograph of a rice leaf blade for automated neural pathology screening, lesion area analysis, and Grad-CAM interpretability
-      </p>
+    <!-- Header with Rice Leaf Garden Background -->
+    <div class="rice-garden-header">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gy-3">
+        <div>
+          <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background:rgba(16,185,129,0.25);border:1px solid rgba(52,211,153,0.45);">
+            <span class="badge bg-success" style="font-size:0.75rem;">AI PATHOLOGY</span>
+            <small class="text-white fw-semibold">RiceNet CNN + Grad-CAM XAI</small>
+          </div>
+          <h2 class="text-white fw-bold mb-1" data-i18n="detect.title">Rice Leaf Pathology &amp; Explainable AI Diagnosis</h2>
+          <p class="mb-0" style="color:#d1fae5;" data-i18n="detect.subtitle">
+            Upload a clear photograph of a rice leaf blade for automated neural pathology screening, lesion area analysis, and Grad-CAM interpretability
+          </p>
+        </div>
+        <div class="d-flex gap-2">
+          <a href="/camera.html" class="btn-agri-outline">
+            <i class="fas fa-camera me-1"></i> <span data-i18n="detect.camera_btn">Use Live Camera</span>
+          </a>
+        </div>
+      </div>
     </div>
 
     <!-- Upload Box & Field Association -->
@@ -67,27 +81,13 @@
         </div>
 
         <div class="col-lg-4">
-          <div class="p-3 rounded mb-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);">
-            <!-- Live Location Geotag Pill -->
-            <div class="d-flex align-items-center justify-content-between p-2 rounded mb-3" style="background:rgba(16,185,129,0.08);border:1px solid rgba(52,211,153,0.25);">
-              <div class="d-flex align-items-center gap-2">
-                <i class="fas fa-map-marker-alt text-emerald"></i>
-                <div>
-                  <small class="text-muted d-block" style="font-size:0.75rem;">Geo-Tag Reference</small>
-                  <b class="text-white" id="detectLiveLocText" style="font-size:0.85rem;">Detecting Location...</b>
-                </div>
-              </div>
-              <button class="btn btn-sm btn-outline-success p-1" title="Refresh Live Location" onclick="refreshDetectLocation()">
-                <i class="fas fa-sync-alt" id="detectLocSpinner"></i>
-              </button>
-            </div>
-
-            <label class="form-label-agri" data-i18n="detect.select_field">Associate with Field / Plot (Optional)</label>
-            <select id="fieldSelect" class="form-select form-control-agri mb-3">
+          <div class="p-3 rounded mb-3 soft-green-panel" style="background:#f0f7f2;border:1px solid #d8e8dc;">
+            <select id="fieldSelect" class="d-none">
               <option value="">General Crop Scan</option>
             </select>
+            <h6 class="fw-bold mb-2 text-dark"><i class="fas fa-brain text-emerald me-1"></i> AI Neural Pathology</h6>
             <small class="text-muted d-block mb-3">
-              Associating scans with a specific field enables temporal pathology tracking per acreage.
+              Deep CNN RiceNet architecture evaluates 20 rice leaf pathologies, generates Grad-CAM heatmaps, and estimates lesion severity.
             </small>
             <button id="btnAnalyze" class="btn-agri-primary w-100" disabled onclick="startLeafAnalysis()">
               <i class="fas fa-microscope me-1"></i> <span data-i18n="detect.btn_analyze">Analyze Foliage with AI</span>
@@ -173,23 +173,7 @@
         <div class="col-lg-7">
           <div class="glass-card p-4 mb-4">
 
-            <!-- Image Location & Regional Weather Banner -->
-            <div id="resLocationBanner" class="p-3 rounded mb-4 d-none" style="background:rgba(16,185,129,0.08);border:1px solid rgba(52,211,153,0.3);">
-              <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                <div>
-                  <div class="d-flex align-items-center gap-2 mb-1">
-                    <span class="fs-5">📍</span>
-                    <b class="text-white fs-6" id="resLocationName">Mandya, Karnataka</b>
-                    <span id="resLocationSourceBadge" class="badge bg-dark border border-secondary text-emerald" style="font-size:0.72rem;">Image EXIF GPS</span>
-                  </div>
-                  <small class="text-muted d-block" id="resLocationCoords">Coordinates: 12.5224° N, 76.8972° E</small>
-                </div>
-                <div class="text-end" id="resWeatherBadgeBox">
-                  <div class="badge bg-emerald text-dark px-3 py-1 font-monospace" style="font-size:0.8rem;" id="resWeatherText">🌡️ 28.5°C | 💧 82% Humidity</div>
-                  <small class="text-muted d-block mt-1" id="resOutbreakRiskText">Disease Risk: Moderate</small>
-                </div>
-              </div>
-            </div>
+
             
             <!-- Header: Identified Condition -->
             <div class="d-flex flex-wrap justify-content-between align-items-start mb-3">
@@ -304,7 +288,7 @@
               </div>
 
               <a id="btnFindNearbyStores" href="/stores.html" class="btn-agri-primary w-100 text-center text-decoration-none">
-                <i class="fas fa-map-marker-alt me-1"></i> <span>📍 Find Nearby Agricultural Input Stores</span>
+                <i class="fas fa-shopping-basket me-1"></i> <span>🛒 Order Recommended Products in Online Store</span>
               </a>
             </div>
 

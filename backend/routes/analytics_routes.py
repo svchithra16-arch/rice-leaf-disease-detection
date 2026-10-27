@@ -35,21 +35,33 @@ def get_user_stats():
 
     def clean_disease_name(name):
         if not name:
-            return "Healthy"
-        return name.replace("_", " ").title().strip()
+            return "Healthy Rice Leaf"
+        clean = name.replace("_", " ").title().strip()
+        if clean in ["Healthy", "Healthy Rice Leaf"]:
+            return "Healthy Rice Leaf"
+        return clean
 
-    def clean_severity(sev):
-        if not sev:
+    def is_healthy_pred(p):
+        name = (p.disease_name or "").lower().strip()
+        sev = (p.severity_level or "").lower().strip()
+        if "healthy" in name or "normal" in name or sev == "healthy":
+            return True
+        if p.healthy_area_pct and p.healthy_area_pct >= 95.0 and (p.lesion_count or 0) <= 1:
+            return True
+        return False
+
+    def clean_severity(p):
+        if is_healthy_pred(p):
             return "Healthy"
+        sev = p.severity_level
+        if not sev:
+            return "Low"
         s = sev.strip().title()
         if s in ["Healthy", "Low", "Mild", "Moderate", "Severe"]:
             return s
         return "Moderate"
 
-    healthy_count = sum(
-        1 for p in predictions
-        if p.disease_name and p.disease_name.lower().strip() in ["healthy", "healthy crop", "normal"]
-    )
+    healthy_count = sum(1 for p in predictions if is_healthy_pred(p))
     diseased_count = max(0, total_scans - healthy_count)
 
     valid_confidences = [p.confidence for p in predictions if p.confidence is not None]
@@ -62,12 +74,12 @@ def get_user_stats():
         avg_conf = 0.0
 
     # Disease frequency
-    disease_list = [clean_disease_name(p.disease_name) for p in predictions]
+    disease_list = [("Healthy Rice Leaf" if is_healthy_pred(p) else clean_disease_name(p.disease_name)) for p in predictions]
     disease_counts = Counter(disease_list)
     top_disease = disease_counts.most_common(1)[0][0] if disease_counts else "None"
 
     # Severity frequency
-    sev_list = [clean_severity(p.severity_level) for p in predictions]
+    sev_list = [clean_severity(p) for p in predictions]
     sev_counts = Counter(sev_list)
     severity_distribution = {
         "Healthy": sev_counts.get("Healthy", 0),
@@ -87,9 +99,13 @@ def get_user_stats():
     recent = []
     for p in sorted_preds:
         p_dict = p.to_dict()
-        p_dict["disease_name"] = clean_disease_name(p.disease_name)
-        p_dict["severity_level"] = clean_severity(p.severity_level)
-        p_dict["confidence"] = round(p_dict.get("confidence") or 0.0, 1)
+        if is_healthy_pred(p):
+            p_dict["disease_name"] = "Healthy Rice Leaf"
+            p_dict["severity_level"] = "Healthy"
+        else:
+            p_dict["disease_name"] = clean_disease_name(p.disease_name)
+            p_dict["severity_level"] = clean_severity(p)
+        p_dict["confidence"] = round(float(p_dict.get("confidence") or 0.0), 1)
         recent.append(p_dict)
 
     return jsonify({

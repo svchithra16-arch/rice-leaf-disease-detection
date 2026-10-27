@@ -3,836 +3,1110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Local Agri Stores - AgriVersion</title>
+  <title>Online Agri Store - AgriVersion</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <link rel="stylesheet" href="/assets/css/style.css">
   <link rel="stylesheet" href="/assets/css/animations.css">
+
   <style>
-    #storeMap {
-      height: 520px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border-glass);
-      z-index: 10;
-      background: #08110e;
+    /* ==========================================================================
+       AgriVersion - Green and White Online Agri Store Theme
+       ========================================================================== */
+    :root {
+      --store-green-dark: #0f3822;
+      --store-green-primary: #059669;
+      --store-green-light: #10b981;
+      --store-green-surface: #f0f7f2;
+      --store-green-border: #d8e8dc;
+      --store-card-bg: #ffffff;
+      --store-bg: #faf8f2;
+      --store-text-dark: #132a1e;
+      --store-text-muted: #4e6b5a;
+      --store-shadow: 0 4px 20px -2px rgba(15, 56, 34, 0.07), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+      --store-shadow-hover: 0 14px 30px -4px rgba(15, 56, 34, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.04);
     }
-    .store-card {
-      background: var(--bg-card-glass);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 1.25rem;
-      transition: var(--transition);
+
+    body.store-page {
+      background-color: var(--store-bg) !important;
+      background-image: 
+        radial-gradient(circle at 10% 15%, rgba(16, 185, 129, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 90% 85%, rgba(5, 150, 105, 0.05) 0%, transparent 45%),
+        linear-gradient(180deg, #faf8f2 0%, #f4efe4 100%) !important;
+      color: var(--store-text-dark) !important;
+      min-height: 100vh;
+    }
+
+    /* Top Trust Ribbon */
+    .store-trust-ribbon {
+      background: #0f3822;
+      border-bottom: 1px solid #184a2f;
+      color: #ffffff;
+      font-size: 0.84rem;
+      padding: 0.55rem 1rem;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      box-shadow: 0 2px 8px rgba(15, 56, 34, 0.15);
+    }
+
+    /* Store Hero Section with Rice Leaf Garden Background */
+    .store-hero {
+      background: 
+        linear-gradient(135deg, rgba(15, 56, 34, 0.88) 0%, rgba(8, 38, 22, 0.94) 100%),
+        url('/assets/images/rice_leaf_bg.jpg') center center / cover no-repeat;
+      border-bottom: 1px solid rgba(52, 211, 153, 0.35);
+      padding: 2.5rem 0 2rem 0;
+      box-shadow: 0 8px 25px rgba(15, 56, 34, 0.15);
       position: relative;
+      color: #ffffff;
+    }
+    .store-hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      color: #ffffff !important;
+      font-size: 2.2rem;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.4rem;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+    }
+    .store-hero-subtitle {
+      color: #d1fae5 !important;
+      font-size: 1.02rem;
+      max-width: 780px;
+      line-height: 1.6;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .store-feature-pill {
+      background: rgba(16, 185, 129, 0.22);
+      border: 1px solid rgba(52, 211, 153, 0.45);
+      color: #ffffff !important;
+      font-weight: 600;
+      font-size: 0.82rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    /* Disease Recommendation Banner */
+    .disease-banner {
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+      border: 1.5px solid var(--store-green-primary);
+      border-radius: 14px;
+      padding: 1rem 1.4rem;
+      color: #065f46;
+      box-shadow: 0 4px 15px rgba(5, 150, 105, 0.1);
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    /* Sidebar Menu */
+    .store-sidebar {
+      position: sticky;
+      top: 90px;
+    }
+    .sidebar-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 1.35rem;
+      box-shadow: var(--store-shadow);
+      margin-bottom: 1.5rem;
+    }
+    .sidebar-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--store-green-dark);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 2px solid var(--store-green-surface);
+    }
+
+    /* Category Buttons in Sidebar */
+    .category-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0.72rem 0.95rem;
+      margin-bottom: 0.45rem;
+      background: #ffffff;
+      border: 1px solid #f1f5f9;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: #334155;
+      text-align: left;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .category-btn:hover {
+      background: var(--store-green-surface);
+      border-color: var(--store-green-border);
+      color: var(--store-green-dark);
+      transform: translateX(3px);
+    }
+    .category-btn.active {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      color: #ffffff;
+      border-color: #047857;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+    }
+    .category-btn.active .category-count-badge {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+    .category-count-badge {
+      background: #f1f5f9;
+      color: #64748b;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      transition: all 0.2s;
+    }
+
+    /* Search & Top Controls */
+    .store-control-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 1.25rem 1.4rem;
+      box-shadow: var(--store-shadow);
+      margin-bottom: 1.5rem;
+    }
+    .search-input-group {
+      position: relative;
+    }
+    .search-input-group .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--store-green-primary);
+      font-size: 1.1rem;
+      pointer-events: none;
+    }
+    .store-search-input {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 0.75rem 2.8rem 0.75rem 2.8rem;
+      font-size: 0.95rem;
+      color: #0f172a;
+      transition: all 0.25s ease;
+      width: 100%;
+    }
+    .store-search-input:focus {
+      background: #ffffff;
+      border-color: var(--store-green-primary);
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+      outline: none;
+    }
+    .search-clear-btn {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 0.95rem;
+      padding: 0.2rem;
+      display: none;
+    }
+    .search-clear-btn:hover {
+      color: #ef4444;
+    }
+
+    .store-sort-select {
+      background-color: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .store-sort-select:focus {
+      border-color: var(--store-green-primary);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+      outline: none;
+    }
+
+    /* Product Cards */
+    .product-card {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--store-shadow);
+      position: relative;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--store-green-light);
+      box-shadow: var(--store-shadow-hover);
+    }
+
+    /* Card Image / Visual Header */
+    .product-visual-box {
+      background: linear-gradient(145deg, #f0fdf4 0%, #ecfdf5 60%, #e6f7ef 100%);
+      padding: 1.8rem 1.25rem 1.4rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border-bottom: 1px solid #f1f5f9;
+      min-height: 155px;
+    }
+    .product-icon-avatar {
+      width: 78px;
+      height: 78px;
+      border-radius: 18px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      box-shadow: 0 8px 20px rgba(6, 95, 70, 0.12);
+      border: 2px solid #ffffff;
+      transition: transform 0.3s ease;
+    }
+    .product-card:hover .product-icon-avatar {
+      transform: scale(1.08) rotate(3deg);
+    }
+
+    .badge-category-tag {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: #ffffff;
+      color: var(--store-green-dark);
+      border: 1px solid var(--store-green-border);
+      font-size: 0.73rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+    }
+    .badge-discount-tag {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25);
+    }
+    .product-badge-strip {
+      position: absolute;
+      bottom: 8px;
+      left: 12px;
+      right: 12px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(4px);
+      border: 1px solid var(--store-green-border);
+      color: var(--store-green-dark);
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Card Body */
+    .product-body {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    .product-brand {
+      color: var(--store-green-primary);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 0.25rem;
+    }
+    .product-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #0f172a;
+      line-height: 1.35;
+      margin-bottom: 0.45rem;
+      min-height: 2.7rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
       overflow: hidden;
     }
-    .store-card:hover {
-      border-color: var(--primary-light);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-      background: var(--bg-card-hover);
-    }
-    .store-card.highlighted {
-      border-color: #34d399;
-      box-shadow: 0 0 20px rgba(52, 211, 153, 0.3);
-    }
-    .stock-badge-in_stock {
-      background: rgba(16, 185, 129, 0.15);
-      color: #34d399;
-      border: 1px solid rgba(52, 211, 153, 0.3);
-    }
-    .stock-badge-limited_stock {
-      background: rgba(245, 158, 11, 0.15);
-      color: #fbbf24;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-    }
-    .stock-badge-out_of_stock {
-      background: rgba(239, 68, 68, 0.15);
-      color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-    .stock-badge-unknown {
-      background: rgba(156, 163, 175, 0.15);
-      color: #9ca3af;
-      border: 1px solid rgba(156, 163, 175, 0.3);
-    }
-    .verified-badge {
-      background: linear-gradient(135deg, #059669, #0d9488);
-      color: #fff;
-      font-size: 0.72rem;
+    .product-ingredient-tag {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+      font-size: 0.76rem;
       font-weight: 600;
-      padding: 0.2rem 0.5rem;
-      border-radius: var(--radius-full);
-      display: inline-flex;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 0.6rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .product-desc-snippet {
+      color: #64748b;
+      font-size: 0.84rem;
+      line-height: 1.5;
+      margin-bottom: 0.85rem;
+      min-height: 2.5rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .product-meta-row {
+      display: flex;
       align-items: center;
-      gap: 0.3rem;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-bottom: 0.85rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #f1f5f9;
     }
-    .product-pill {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 0.2rem 0.6rem;
-      border-radius: var(--radius-full);
-      font-size: 0.78rem;
-      color: var(--text-main);
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-    .freshness-tag {
-      font-size: 0.78rem;
-    }
-    .freshness-tag.fresh {
-      color: #34d399;
-    }
-    .freshness-tag.stale {
+    .rating-stars {
       color: #f59e0b;
+      font-size: 0.82rem;
+      font-weight: 700;
     }
-    /* Leaflet Dark Theme Overrides */
-    .leaflet-popup-content-wrapper, .leaflet-popup-tip {
-      background: #0d1b16 !important;
-      color: #fff !important;
-      border: 1px solid rgba(52, 211, 153, 0.3) !important;
-      border-radius: 12px !important;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6) !important;
+
+    /* Price Section */
+    .product-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.55rem;
+      margin-bottom: 1.1rem;
+      margin-top: auto;
     }
-    .leaflet-popup-content {
-      margin: 12px 14px !important;
-      line-height: 1.4 !important;
+    .product-price-current {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--store-green-dark);
     }
-    .leaflet-container {
-      font-family: 'Outfit', sans-serif !important;
+    .product-price-original {
+      font-size: 0.92rem;
+      color: #94a3b8;
+      text-decoration: line-through;
+    }
+    .product-savings-badge {
+      background: #ecfdf5;
+      color: #047857;
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      border: 1px solid #a7f3d0;
+    }
+
+    /* Buttons */
+    .btn-view-product {
+      background: #ffffff;
+      border: 1.5px solid var(--store-green-primary);
+      color: var(--store-green-primary);
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 0.6rem 0.9rem;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+    .btn-view-product:hover {
+      background: var(--store-green-primary);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+    }
+
+    .btn-buy-online {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      border: none;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 0.6rem 0.9rem;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+      width: 100%;
+      text-decoration: none;
+    }
+    .btn-buy-online:hover {
+      background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
+      transform: translateY(-1px);
+    }
+
+    /* Trusted Partners List */
+    .partner-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 0.85rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      margin-bottom: 0.5rem;
+      text-decoration: none;
+      color: #1e293b;
+      font-weight: 600;
+      font-size: 0.86rem;
+      transition: all 0.2s;
+    }
+    .partner-pill:hover {
+      background: #ffffff;
+      border-color: var(--store-green-primary);
+      color: var(--store-green-primary);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      transform: translateX(3px);
+    }
+
+    /* Modal Styling */
+    .store-modal-content {
+      background: #ffffff;
+      border-radius: 20px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      color: #0f172a;
+    }
+    .store-modal-header {
+      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+      border-bottom: 1.5px solid var(--store-green-border);
+      padding: 1.5rem;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+    }
+    .store-modal-body {
+      padding: 1.75rem;
+    }
+
+    .retailer-buy-card {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      transition: all 0.2s;
+    }
+    .retailer-buy-card:hover {
+      background: #ffffff;
+      border-color: var(--store-green-primary);
+      box-shadow: 0 4px 15px rgba(5, 150, 105, 0.12);
+    }
+
+    /* Filter Active Pill */
+    .active-filter-badge {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-right: 0.4rem;
+      margin-bottom: 0.4rem;
+    }
+    .active-filter-badge .remove-filter {
+      cursor: pointer;
+      color: #94a3b8;
+    }
+    .active-filter-badge .remove-filter:hover {
+      color: #ef4444;
+    }
+
+    /* Empty State */
+    .store-empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: #ffffff;
+      border: 2px dashed #cbd5e1;
+      border-radius: 16px;
+      color: #64748b;
     }
   </style>
 </head>
-<body>
+<body class="store-page">
 
-  <!-- Navbar Placeholder -->
+  <!-- Top Navigation Placeholder (AgriVersion Standard Navbar) -->
   <div id="navbarPlaceholder"></div>
 
-  <div class="container-fluid px-lg-5 py-4">
-
-    <!-- Page Header & Actions -->
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gy-3">
-      <div>
-        <div class="d-flex align-items-center gap-2 mb-1">
-          <span class="fs-4">🏪</span>
-          <h2 class="text-white fw-bold mb-0" data-i18n="stores.title">Local Agricultural Store & Product Availability</h2>
-        </div>
-        <p class="text-muted mb-0" data-i18n="stores.subtitle">
-          Locate registered agricultural retailers stocking inputs for rice crop disease management near you
-        </p>
+  <!-- Trust & Platform Ribbon -->
+  <div class="store-trust-ribbon">
+    <div class="container-xl d-flex flex-wrap align-items-center justify-content-between gap-2">
+      <div class="d-flex align-items-center gap-3">
+        <span><i class="fas fa-certificate text-warning me-1"></i> Certified Agricultural Input Catalog</span>
+        <span class="d-none d-md-inline">•</span>
+        <span class="d-none d-md-inline"><i class="fas fa-truck-fast me-1"></i> Direct Doorstep Rural Delivery</span>
       </div>
-      <div class="d-flex flex-wrap gap-2">
-        <button class="btn btn-agri-primary d-flex align-items-center gap-2" id="headerMobileGpsBtn" onclick="openMobileGpsModal()">
-          <i class="fas fa-mobile-alt text-warning"></i> <span>Connect Mobile Location</span>
-          <span id="headerMobileStatusDot" class="badge rounded-pill bg-secondary" style="font-size:0.7rem;">Not Connected</span>
-        </button>
-        <button class="btn-agri-outline" onclick="openNotifyModal()">
-          <i class="fas fa-bell text-warning me-1"></i> <span data-i18n="stores.notify_me">Product Stock Alerts</span>
-        </button>
-        <button class="btn-agri-primary" onclick="openRetailerPortal()">
-          <i class="fas fa-store me-1"></i> <span data-i18n="stores.retailer_portal">Retailer Portal</span>
-        </button>
+      <div class="d-flex align-items-center gap-3">
+        <span class="text-white-50">Trusted Portals:</span>
+        <span class="fw-bold">BigHaat</span>
+        <span>•</span>
+        <span class="fw-bold">AgroStar</span>
+        <span>•</span>
+        <span class="fw-bold">IFFCO Bazar</span>
+        <span>•</span>
+        <span class="fw-bold">KisanKraft</span>
+        <span>•</span>
+        <span class="fw-bold">Amazon Agri</span>
       </div>
     </div>
+  </div>
 
-    <!-- Live Mobile GPS Real-Time Status Notification Banner -->
-    <div id="mobileGpsLiveBanner" class="alert alert-dismissible fade show mb-3 p-3 d-none" role="alert" style="background:rgba(14,116,144,0.25);border:1px solid rgba(56,189,248,0.45);border-radius:var(--radius-md);color:#e2e8f0;">
-      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-        <div class="d-flex align-items-center gap-3">
-          <div id="mobileBannerPulse" class="spinner-grow spinner-grow-sm text-info" role="status"></div>
-          <div>
-            <div class="d-flex align-items-center gap-2">
-              <b id="mobileBannerTitle" class="text-white" style="font-size:0.95rem;">📱 Mobile Location Connected</b>
-              <span id="mobileBannerBadge" class="badge bg-success" style="font-size:0.75rem;">GPS Locked</span>
-            </div>
-            <span id="mobileBannerSubtitle" style="font-size:0.85rem;color:#cbd5e1;">
-              Coordinates: <span id="bannerCoordsText">Waiting for live signal...</span>
+  <!-- Store Header Banner -->
+  <section class="store-hero">
+    <div class="container-xl">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="store-feature-pill">
+              <i class="fas fa-shop"></i> <span data-i18n="store.hero_badge1">Verified Agricultural Marketplace</span>
+            </span>
+            <span class="store-feature-pill">
+              <i class="fas fa-shield-check"></i> <span data-i18n="store.hero_badge2">CIBRC & ICAR Certified</span>
             </span>
           </div>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-          <button class="btn btn-sm btn-outline-info text-white" onclick="openMobileGpsModal()">
-            <i class="fas fa-qrcode me-1"></i> QR / Settings
-          </button>
-          <button class="btn btn-sm btn-outline-danger" onclick="disconnectMobileGps()">
-            <i class="fas fa-times me-1"></i> Disconnect
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Safety & Regulatory Layer Disclaimer Notice -->
-    <div class="alert alert-dismissible fade show mb-4 p-3" role="alert" style="background:rgba(6,95,70,0.25);border:1px solid rgba(52,211,153,0.35);border-radius:var(--radius-md);color:#e2e8f0;">
-      <div class="d-flex align-items-start gap-3">
-        <i class="fas fa-shield-alt text-emerald fa-2x mt-1"></i>
-        <div style="flex:1;">
-          <b class="text-emerald d-block mb-1" style="font-size:0.95rem;">
-            🛡️ Safety & Regulatory Advisory: AI Detection ≠ Biological Diagnosis • Product Availability ≠ Chemical Prescription
-          </b>
-          <span style="font-size:0.87rem;color:#cbd5e1;">
-            Product availability reported by local retailers does not constitute an automated recommendation. Always verify crop disease symptoms with an authorized agricultural extension officer (Krishi Vigyan Kendra) and strictly adhere to registered container label instructions, application timings, and pre-harvest intervals (PHI).
-          </span>
-        </div>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    </div>
-
-    <!-- Search & Location Bar -->
-    <div class="glass-card p-3 mb-4">
-      <div class="row g-3 align-items-center">
-        <!-- Location Buttons & Inputs -->
-        <div class="col-lg-5 col-md-6">
-          <div class="input-group">
-            <button id="mobileGpsBtn" class="btn btn-outline-info text-white" type="button" onclick="openMobileGpsModal()" title="Connect Mobile Phone GPS">
-              <i class="fas fa-mobile-alt text-info"></i> <span id="mobileGpsBtnText">Mobile GPS</span>
-            </button>
-            <button id="gpsBtn" class="btn btn-outline-secondary text-white" type="button" onclick="useLaptopLocationExplicitly()" title="Use Laptop/Browser Fallback Location">
-              <i class="fas fa-laptop text-muted"></i> Laptop
-            </button>
-            <input type="text" id="searchInput" class="form-control form-control-agri" placeholder="Town, District, or PIN Code (e.g. Mandya, 571401)" data-i18n-placeholder="stores.search_placeholder">
-            <button class="btn btn-agri-primary" type="button" onclick="applySearch()">
-              <i class="fas fa-search"></i>
-            </button>
-          </div>
-        </div>
-
-        <!-- Town/District Presets Dropdown -->
-        <div class="col-lg-3 col-md-6">
-          <select id="cityPresetSelect" class="form-select form-control-agri" onchange="onCityPresetChange(this.value)">
-            <option value="laptop_gps" selected>💻 Laptop / Browser Live Location</option>
-            <option value="mobile_gps">📱 Mobile Phone Live GPS</option>
-            <option value="doddaballapur">📍 Doddaballapur (Bengaluru Rural Paddy Belt)</option>
-            <option value="bengaluru">Bengaluru Central & Urban</option>
-            <option value="chikkaballapur">Chikkaballapur / Kolar Hub</option>
-            <option value="mandya">Mandya Paddy Belt (Karnataka)</option>
-            <option value="mysuru">Mysuru / Cauvery Basin (Karnataka)</option>
-            <option value="shivamogga">Shivamogga / Malnad Belt (Karnataka)</option>
-            <option value="raichur">Raichur Paddy Hub (Karnataka)</option>
-            <option value="hassan">Hassan Agricultural Belt</option>
-            <option value="bellary">Bellary / Ballari Paddy Hub</option>
-            <option value="warangal">Warangal Paddy Market (Telangana)</option>
-            <option value="thanjavur">Thanjavur Delta (Tamil Nadu)</option>
-            <option value="bardhaman">Bardhaman Rice Belt (West Bengal)</option>
-          </select>
-        </div>
-
-        <!-- Disease Filter Dropdown -->
-        <div class="col-lg-3 col-md-6">
-          <select id="diseaseSelect" class="form-select form-control-agri" onchange="onDiseaseFilterChange(this.value)">
-            <option value="">🦠 All Rice Diseases (Any Input)</option>
-          </select>
-        </div>
-
-        <!-- Max Distance Slider Filter -->
-        <div class="col-lg-2 col-md-6">
-          <div class="d-flex align-items-center justify-content-between mb-1">
-            <small class="text-muted">Max Radius:</small>
-            <b id="distanceLabel" class="text-emerald" style="font-size:0.85rem;">20 km</b>
-          </div>
-          <input type="range" class="form-range" id="distanceRange" min="5" max="100" step="5" value="20" oninput="onDistanceRangeInput(this.value)">
-        </div>
-      </div>
-
-      <!-- Active Disease Filter Pill Banner (If navigated from detection) -->
-      <div id="diseaseFilterBanner" class="d-none mt-3 p-2 rounded d-flex align-items-center justify-content-between" style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);">
-        <div class="d-flex align-items-center gap-2">
-          <span class="badge bg-success">Detected Disease</span>
-          <span class="text-white fw-bold" id="bannerDiseaseName">Rice Blast</span>
-          <span class="text-muted" style="font-size:0.85rem;">— Showing stores reporting relevant fungicides and management products</span>
-        </div>
-        <button class="btn btn-sm btn-outline-secondary text-white py-0" onclick="clearDiseaseFilter()">
-          <i class="fas fa-times"></i> Clear
-        </button>
-      </div>
-    </div>
-
-    <!-- Secondary Filters Bar -->
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-      <!-- Category Pills -->
-      <div class="d-flex flex-wrap gap-2" id="categoryPillsContainer">
-        <button class="btn btn-sm btn-agri-primary category-pill active" onclick="setCategoryFilter('all')">All</button>
-        <button class="btn btn-sm btn-agri-outline category-pill" onclick="setCategoryFilter('Fungicides')">Fungicides</button>
-        <button class="btn btn-sm btn-agri-outline category-pill" onclick="setCategoryFilter('Bactericides')">Bactericides</button>
-        <button class="btn btn-sm btn-agri-outline category-pill" onclick="setCategoryFilter('Insecticides')">Insecticides</button>
-        <button class="btn btn-sm btn-agri-outline category-pill" onclick="setCategoryFilter('Bio-control')">Bio-control & Organic</button>
-        <button class="btn btn-sm btn-agri-outline category-pill" onclick="setCategoryFilter('Fertilizers')">Fertilizers & Nutrients</button>
-        <button class="btn btn-sm btn-agri-outline category-pill" onclick="setCategoryFilter('Seed Treatment')">Seed Treatment</button>
-      </div>
-
-      <!-- Additional Filter Switches & Sort -->
-      <div class="d-flex align-items-center gap-3">
-        <div class="form-check form-switch mb-0">
-          <input class="form-check-input" type="checkbox" id="verifiedOnlySwitch" onchange="applySearch()">
-          <label class="form-check-label text-muted" for="verifiedOnlySwitch" style="font-size:0.85rem;">
-            ✓ Verified Only
-          </label>
-        </div>
-
-        <div class="form-check form-switch mb-0">
-          <input class="form-check-input" type="checkbox" id="inStockOnlySwitch" onchange="applySearch()">
-          <label class="form-check-label text-muted" for="inStockOnlySwitch" style="font-size:0.85rem;">
-            🟢 In Stock Only
-          </label>
-        </div>
-
-        <select id="sortBySelect" class="form-select form-select-sm form-control-agri" style="width:auto;" onchange="applySearch()">
-          <option value="distance">Sort: Nearest Distance</option>
-          <option value="freshness">Sort: Recently Updated Stock</option>
-          <option value="rating">Sort: Highest Rating</option>
-          <option value="verified">Sort: Verified First</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Main 2-Column Map + Store Cards Area -->
-    <div class="row g-4">
-      <!-- Left Column: Interactive Map -->
-      <div class="col-lg-6">
-        <div class="glass-card p-3 sticky-top" style="top: 80px; z-index: 20;">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="d-flex align-items-center gap-2">
-              <i class="fas fa-map-marked-alt text-emerald"></i>
-              <h6 class="text-white fw-bold mb-0">Interactive Store Map</h6>
-            </div>
-            <small id="mapCenterLabel" class="text-muted" style="font-size:0.8rem;">Waiting for live location...</small>
-          </div>
-          
-          <div id="storeMap"></div>
-          <div id="locationPermissionNotice" class="alert alert-warning d-none mt-3 mb-0" role="alert">
-            <strong>Laptop live location is not available.</strong>
-            <p class="mb-2">The browser did not return a device location. Click the site controls icon beside the address bar, set <b>Location</b> to <b>Allow</b>, then retry. Also confirm Windows Settings &gt; Privacy &gt; Location is enabled and Wi-Fi is on.</p>
-            <button type="button" class="btn btn-sm btn-warning" onclick="useLaptopLocationExplicitly()"><i class="fas fa-location-crosshairs me-1"></i>Retry live location</button>
-          </div>
-
-          <!-- Map Legend -->
-          <div class="d-flex flex-wrap justify-content-between align-items-center mt-2 px-2" style="font-size:0.78rem;color:#9ca3af;">
-            <div class="d-flex align-items-center gap-3">
-              <span><span class="badge bg-primary rounded-circle p-1"></span> Your Location</span>
-              <span><span class="badge bg-success rounded-circle p-1"></span> In Stock</span>
-              <span><span class="badge bg-warning rounded-circle p-1"></span> Limited</span>
-              <span><span class="badge bg-secondary rounded-circle p-1"></span> Other</span>
-            </div>
-            <span class="text-emerald">Click any pin for directions</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Column: Stores Cards List -->
-      <div class="col-lg-6">
-        <!-- Results Counter & Status -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <span id="resultsCountText" class="text-muted" style="font-size:0.9rem;">Loading stores...</span>
-          <span class="badge bg-success" style="font-size:0.75rem;">Verified Retailer Network</span>
-        </div>
-
-        <!-- Store Cards Container -->
-        <div id="storesCardsContainer" class="d-flex flex-column gap-3">
-          <!-- Dynamically Rendered -->
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Modal 1: Store Full Profile & Inventory Modal -->
-  <div class="modal fade" id="storeDetailsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content" style="background:var(--bg-dark);border:1px solid var(--border-glass);color:var(--text-main);">
-        <div class="modal-header" style="border-bottom:1px solid rgba(255,255,255,0.08);">
-          <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-              <h4 id="modalStoreName" class="text-white fw-bold mb-0">Store Name</h4>
-              <span id="modalStoreVerified" class="verified-badge">✓ Verified Agri Store</span>
-            </div>
-            <p id="modalStoreAddress" class="text-muted mb-0" style="font-size:0.88rem;">Address line</p>
-          </div>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-
-        <div class="modal-body p-4">
-          <!-- Store Meta Highlights -->
-          <div class="row g-3 mb-4">
-            <div class="col-md-3 col-6">
-              <div class="p-3 rounded" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);">
-                <small class="text-muted d-block">Phone / Contact</small>
-                <b id="modalStorePhone" class="text-white">+91 00000 00000</b>
-              </div>
-            </div>
-            <div class="col-md-3 col-6">
-              <div class="p-3 rounded" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);">
-                <small class="text-muted d-block">Opening Hours</small>
-                <b id="modalStoreHours" class="text-white">08:00 AM - 08:00 PM</b>
-              </div>
-            </div>
-            <div class="col-md-3 col-6">
-              <div class="p-3 rounded" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);">
-                <small class="text-muted d-block">Farmer Rating</small>
-                <b id="modalStoreRating" class="text-warning">★ 4.9 (24 Reviews)</b>
-              </div>
-            </div>
-            <div class="col-md-3 col-6">
-              <div class="p-3 rounded" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);">
-                <small class="text-muted d-block">License Number</small>
-                <b id="modalStoreLicense" class="text-emerald" style="font-size:0.85rem;">KA-MDY-RET-2024</b>
-              </div>
-            </div>
-          </div>
-
-          <!-- Quick Action Buttons -->
-          <div class="d-flex flex-wrap gap-2 mb-4">
-            <a id="modalBtnCall" href="#" class="btn-agri-primary">
-              <i class="fas fa-phone-alt me-1"></i> Call Store
-            </a>
-            <a id="modalBtnWhatsapp" href="#" target="_blank" class="btn btn-outline-success text-white">
-              <i class="fab fa-whatsapp text-success me-1"></i> WhatsApp
-            </a>
-            <a id="modalBtnDirections" href="#" target="_blank" class="btn-agri-outline">
-              <i class="fas fa-directions text-info me-1"></i> Get Directions
-            </a>
-            <button class="btn btn-outline-warning" onclick="openReviewSection()">
-              <i class="fas fa-star me-1"></i> Write Review
-            </button>
-          </div>
-
-          <!-- Store Product Inventory Section -->
-          <div class="mb-4">
-            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
-              <h5 class="text-white fw-bold mb-0"><i class="fas fa-boxes text-emerald me-2"></i> Product Inventory & Reported Stock</h5>
-              <div style="width:250px;">
-                <input type="text" id="inventorySearchInput" class="form-control form-control-sm form-control-agri" placeholder="Filter inventory..." oninput="filterModalInventory(this.value)">
-              </div>
-            </div>
-
-            <div class="table-responsive">
-              <table class="table table-dark table-hover align-middle mb-0" style="background:transparent;">
-                <thead>
-                  <tr class="text-muted" style="border-color:rgba(255,255,255,0.08);font-size:0.85rem;">
-                    <th>PRODUCT & BRAND</th>
-                    <th>CATEGORY & ACTIVE INGREDIENT</th>
-                    <th>PACK SIZE</th>
-                    <th>PRICE (INR)</th>
-                    <th>STOCK STATUS</th>
-                    <th>LAST UPDATED</th>
-                  </tr>
-                </thead>
-                <tbody id="modalInventoryTableBody">
-                  <!-- Dynamically populated -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Farmer Reviews & Feedback Form -->
-          <div id="modalReviewsSection" class="p-3 rounded" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
-            <h6 class="text-white fw-bold mb-3"><i class="fas fa-comments text-emerald me-2"></i> Verified Farmer Reviews</h6>
-            
-            <div id="modalReviewsList" class="d-flex flex-column gap-2 mb-3">
-              <!-- Dynamically populated -->
-            </div>
-
-            <!-- Review Submission Form -->
-            <div class="p-3 rounded mt-3" style="background:rgba(16,185,129,0.05);border:1px solid rgba(52,211,153,0.2);">
-              <h6 class="text-white fw-bold mb-2">Leave a Review for this Retailer</h6>
-              <div class="row g-2 mb-2">
-                <div class="col-md-6">
-                  <input type="text" id="reviewAuthorInput" class="form-control form-control-sm form-control-agri" placeholder="Your Name (Farmer / Agronomist)">
-                </div>
-                <div class="col-md-6">
-                  <select id="reviewRatingSelect" class="form-select form-select-sm form-control-agri">
-                    <option value="5">★★★★★ 5 Stars - Excellent Stock & Service</option>
-                    <option value="4">★★★★☆ 4 Stars - Good Availability</option>
-                    <option value="3">★★★☆☆ 3 Stars - Average</option>
-                    <option value="2">★★☆☆☆ 2 Stars - Limited Stock</option>
-                    <option value="1">★☆☆☆☆ 1 Star - Poor Service</option>
-                  </select>
-                </div>
-              </div>
-              <textarea id="reviewCommentInput" class="form-control form-control-sm form-control-agri mb-2" rows="2" placeholder="Write your experience (e.g. prompt stock, genuine product labels, reasonable pricing)..."></textarea>
-              <button class="btn-agri-primary btn-sm" onclick="submitStoreReview()">
-                <i class="fas fa-paper-plane me-1"></i> Submit Farmer Review
-              </button>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal 2: "Notify Me" Stock Availability Alert -->
-  <div class="modal fade" id="notifyMeModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="background:var(--bg-dark);border:1px solid var(--border-glass);color:var(--text-main);">
-        <div class="modal-header" style="border-bottom:1px solid rgba(255,255,255,0.08);">
-          <div class="d-flex align-items-center gap-2">
-            <i class="fas fa-bell text-warning fa-lg"></i>
-            <h5 class="text-white fw-bold mb-0">Product Availability Alert ("Notify Me")</h5>
-          </div>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body p-4">
-          <p class="text-muted" style="font-size:0.88rem;">
-            Request automated alerts when participating agricultural stores near you report verified stock for specific crop protection products.
+          <h1 class="store-hero-title" data-i18n="store.hero_title">Online Agri Store</h1>
+          <p class="store-hero-subtitle" data-i18n="store.hero_subtitle">
+            Order certified paddy seeds, high-efficiency nano-fertilizers, targeted fungicides, modern farming tools, and organic inputs from trusted online shopping portals with prompt doorstep delivery to your village.
           </p>
-          <div class="mb-3">
-            <label class="form-label-agri">Product Category or Input Required</label>
-            <select id="notifyCategorySelect" class="form-select form-control-agri">
-              <option value="Fungicides">Fungicides (Rice Blast, Sheath Blight, Brown Spot)</option>
-              <option value="Bactericides">Bactericides (Bacterial Leaf Blight, Streak)</option>
-              <option value="Insecticides">Insecticides (Stem Borer, BPH, Leaf Folder)</option>
-              <option value="Bio-control">Bio-control & Organic Formulations</option>
-              <option value="Fertilizers & Micronutrients">Fertilizers, Zinc & Micronutrients</option>
-              <option value="Seed Treatment">Seed Treatment Dressing</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label class="form-label-agri">Specific Product / Brand (Optional)</label>
-            <input type="text" id="notifyProductName" class="form-control form-control-agri" placeholder="e.g. Beam Tricyclazole, Kasu-B, Coragen">
-          </div>
-          <div class="mb-3">
-            <label class="form-label-agri">Your Name</label>
-            <input type="text" id="notifyUserName" class="form-control form-control-agri" placeholder="Enter full name">
-          </div>
-          <div class="mb-3">
-            <label class="form-label-agri">Mobile Number / WhatsApp</label>
-            <input type="tel" id="notifyUserPhone" class="form-control form-control-agri" placeholder="+91 94480 00000">
-          </div>
-          <button class="btn-agri-primary w-100" onclick="submitStockNotificationRequest()">
-            <i class="fas fa-check-circle me-1"></i> Activate Availability Alert
+        </div>
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0 d-flex flex-wrap gap-2 justify-content-lg-end">
+          <button class="btn btn-warning text-dark fw-bold px-3 py-2" style="border-radius:10px;" data-bs-toggle="modal" data-bs-target="#addProductModal">
+            <i class="fas fa-plus-circle me-1"></i> <span data-i18n="store.add_product_btn">+ Add Product</span>
           </button>
+          <a href="/chat.html" class="btn btn-outline-success fw-bold px-3 py-2" style="border-radius:10px;">
+            <i class="fas fa-robot me-1"></i> <span data-i18n="store.ask_ricecare">Ask RiceCare AI</span>
+          </a>
+          <a href="/detect.html" class="btn btn-success fw-bold px-3 py-2" style="border-radius:10px; background:linear-gradient(135deg, #059669, #047857);">
+            <i class="fas fa-microscope me-1"></i> <span data-i18n="store.scan_crop_first">Scan Crop First</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Active Disease Context Alert (Appears when redirected from Disease Detection) -->
+      <div id="diseaseAlertBanner" class="disease-banner mt-3 d-none">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-3">
+            <div style="font-size:1.8rem;"><i class="fas fa-notes-medical text-success"></i></div>
+            <div>
+              <div class="fw-bold fs-6">Prescription for Detected Disease: <span id="bannerDiseaseName" class="text-emerald text-decoration-underline">Rice Blast</span></div>
+              <small class="text-secondary">Displaying certified inputs scientifically recommended for treating and suppressing this specific paddy pathogen.</small>
+            </div>
+          </div>
+          <div>
+            <button class="btn btn-sm btn-outline-secondary bg-white text-dark fw-bold" onclick="OnlineStore.clearDiseaseFilter()">
+              <i class="fas fa-times me-1"></i> Show All Products
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Modal 3: Retailer Portal & Store Registration Drawer -->
-  <div class="modal fade" id="retailerPortalModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content" style="background:var(--bg-dark);border:1px solid var(--border-glass);color:var(--text-main);">
-        <div class="modal-header" style="border-bottom:1px solid rgba(255,255,255,0.08);">
-          <div class="d-flex align-items-center gap-2">
-            <span class="fs-4">🏪</span>
-            <h5 class="text-white fw-bold mb-0">Agricultural Retailer Management Portal</h5>
-          </div>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body p-4">
-          <!-- Retailer Tabs -->
-          <ul class="nav nav-pills mb-3 gap-2" id="retailerTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button class="nav-link-agri active" id="tab-manage-inv-btn" data-bs-toggle="pill" data-bs-target="#tab-manage-inv" type="button" role="tab">
-                <i class="fas fa-boxes me-1"></i> Manage Store Inventory
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link-agri" id="tab-register-store-btn" data-bs-toggle="pill" data-bs-target="#tab-register-store" type="button" role="tab">
-                <i class="fas fa-plus-circle me-1"></i> Register New Store Listing
-              </button>
-            </li>
-          </ul>
+  <!-- Main Store Layout: Sidebar + Product Catalog -->
+  <main class="py-4">
+    <div class="container-xl">
+      <div class="row g-4">
 
-          <div class="tab-content" id="retailerTabContent">
-            <!-- Tab 1: Manage Inventory -->
-            <div class="tab-pane fade show active" id="tab-manage-inv" role="tabpanel">
-              <div class="mb-3">
-                <label class="form-label-agri">Select Store to Manage</label>
-                <select id="retailerStoreSelect" class="form-select form-control-agri" onchange="loadRetailerInventory(this.value)">
-                  <!-- Populated dynamically -->
-                </select>
+        <!-- =================================================================== -->
+        <!-- 1. LEFT SIDEBAR MENU -->
+        <!-- =================================================================== -->
+        <aside class="col-lg-3 col-md-4">
+          <div class="store-sidebar">
+
+            <!-- Category Filter Card -->
+            <div class="sidebar-card">
+              <div class="sidebar-title">
+                <i class="fas fa-layer-group text-success"></i>
+                <span data-i18n="store.categories_title">Categories</span>
               </div>
-
-              <!-- Quick Add Product Accordion -->
-              <div class="accordion mb-4" id="addProductAccordion">
-                <div class="accordion-item" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);">
-                  <h2 class="accordion-header">
-                    <button class="accordion-button collapsed text-white" style="background:transparent;" type="button" data-bs-toggle="collapse" data-bs-target="#addProductCollapse">
-                      <i class="fas fa-plus-circle text-emerald me-2"></i> Add New Product to Inventory
-                    </button>
-                  </h2>
-                  <div id="addProductCollapse" class="accordion-collapse collapse p-3">
-                    <div class="row g-2 mb-2">
-                      <div class="col-md-6">
-                        <label class="form-label-agri">Product & Brand Name *</label>
-                        <input type="text" id="newProdName" class="form-control form-control-sm form-control-agri" placeholder="e.g. Beam (Tricyclazole 75% WP)">
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label-agri">Category *</label>
-                        <select id="newProdCategory" class="form-select form-select-sm form-control-agri">
-                          <option value="Fungicide">Fungicide</option>
-                          <option value="Bactericide">Bactericide</option>
-                          <option value="Insecticide">Insecticide</option>
-                          <option value="Bio-control">Bio-control & Organic</option>
-                          <option value="Fertilizers & Micronutrients">Fertilizers & Micronutrients</option>
-                          <option value="Seed Treatment">Seed Treatment</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="row g-2 mb-2">
-                      <div class="col-md-6">
-                        <label class="form-label-agri">Active Ingredient *</label>
-                        <input type="text" id="newProdIngredient" class="form-control form-control-sm form-control-agri" placeholder="e.g. Tricyclazole 75% WP">
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label-agri">Manufacturer</label>
-                        <input type="text" id="newProdMfr" class="form-control form-control-sm form-control-agri" placeholder="e.g. Corteva / Bayer / Syngenta">
-                      </div>
-                    </div>
-                    <div class="row g-2 mb-3">
-                      <div class="col-md-4">
-                        <label class="form-label-agri">Pack Size</label>
-                        <input type="text" id="newProdPack" class="form-control form-control-sm form-control-agri" placeholder="e.g. 500 g / 250 mL">
-                      </div>
-                      <div class="col-md-4">
-                        <label class="form-label-agri">Price in INR (Optional)</label>
-                        <input type="number" id="newProdPrice" class="form-control form-control-sm form-control-agri" placeholder="e.g. 380">
-                      </div>
-                      <div class="col-md-4">
-                        <label class="form-label-agri">Stock Status</label>
-                        <select id="newProdStock" class="form-select form-select-sm form-control-agri">
-                          <option value="in_stock">🟢 In Stock</option>
-                          <option value="limited_stock">🟡 Limited Stock</option>
-                          <option value="out_of_stock">🔴 Out of Stock</option>
-                        </select>
-                      </div>
-                    </div>
-                    <button class="btn-agri-primary btn-sm" onclick="submitNewProduct()">
-                      <i class="fas fa-save me-1"></i> Save to Store Inventory
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Retailer Stock Manager Table -->
-              <h6 class="text-white fw-bold mb-2">Live Store Inventory (1-Click Stock Status Update)</h6>
-              <div class="table-responsive">
-                <table class="table table-dark table-hover align-middle mb-0" style="background:transparent;">
-                  <thead>
-                    <tr class="text-muted" style="border-color:rgba(255,255,255,0.08);font-size:0.85rem;">
-                      <th>PRODUCT NAME</th>
-                      <th>CATEGORY</th>
-                      <th>PRICE (₹)</th>
-                      <th>UPDATE STOCK STATUS</th>
-                      <th class="text-end">ACTION</th>
-                    </tr>
-                  </thead>
-                  <tbody id="retailerInventoryTableBody">
-                    <!-- Populated dynamically -->
-                  </tbody>
-                </table>
+              <div id="categoryBtnList">
+                <button class="category-btn active" data-category="All" onclick="OnlineStore.selectCategory('All')">
+                  <span><i class="fas fa-border-all me-2 text-emerald"></i> <span data-i18n="store.cat_all">All Products</span></span>
+                  <span class="category-count-badge" id="countAll">32</span>
+                </button>
+                <button class="category-btn" data-category="Seeds" onclick="OnlineStore.selectCategory('Seeds')">
+                  <span><i class="fas fa-seedling me-2 text-warning"></i> <span data-i18n="store.cat_seeds">Seeds</span></span>
+                  <span class="category-count-badge" id="countSeeds">6</span>
+                </button>
+                <button class="category-btn" data-category="Fertilizers" onclick="OnlineStore.selectCategory('Fertilizers')">
+                  <span><i class="fas fa-cubes me-2 text-info"></i> <span data-i18n="store.cat_fertilizers">Fertilizers</span></span>
+                  <span class="category-count-badge" id="countFertilizers">6</span>
+                </button>
+                <button class="category-btn" data-category="Pesticides" onclick="OnlineStore.selectCategory('Pesticides')">
+                  <span><i class="fas fa-shield-virus me-2 text-danger"></i> <span data-i18n="store.cat_pesticides">Pesticides</span></span>
+                  <span class="category-count-badge" id="countPesticides">8</span>
+                </button>
+                <button class="category-btn" data-category="Tools & Equipment" onclick="OnlineStore.selectCategory('Tools & Equipment')">
+                  <span><i class="fas fa-wrench me-2 text-primary"></i> <span data-i18n="store.cat_tools">Tools & Equipment</span></span>
+                  <span class="category-count-badge" id="countTools">6</span>
+                </button>
+                <button class="category-btn" data-category="Organic Products" onclick="OnlineStore.selectCategory('Organic Products')">
+                  <span><i class="fas fa-leaf me-2 text-success"></i> <span data-i18n="store.cat_organic">Organic Products</span></span>
+                  <span class="category-count-badge" id="countOrganic">6</span>
+                </button>
               </div>
             </div>
 
-            <!-- Tab 2: Register New Store -->
-            <div class="tab-pane fade" id="tab-register-store" role="tabpanel">
-              <div class="p-3 rounded mb-3" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);">
-                <div class="row g-3">
-                  <div class="col-md-6">
-                    <label class="form-label-agri">Store Name *</label>
-                    <input type="text" id="regStoreName" class="form-control form-control-agri" placeholder="e.g. Sri Lakshmi Agro Center">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label-agri">Owner / Proprietor Name *</label>
-                    <input type="text" id="regOwnerName" class="form-control form-control-agri" placeholder="e.g. B. M. Chandrashekar">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label-agri">Mobile Number *</label>
-                    <input type="tel" id="regPhone" class="form-control form-control-agri" placeholder="+91 94481 00000">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label-agri">WhatsApp Number</label>
-                    <input type="tel" id="regWhatsapp" class="form-control form-control-agri" placeholder="+91 94481 00000">
-                  </div>
-                  <div class="col-12">
-                    <label class="form-label-agri">Store Address (Street, Landmark, APMC Yard) *</label>
-                    <input type="text" id="regAddress" class="form-control form-control-agri" placeholder="#42, Sugar Town Main Road, Mandya">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label-agri">City / Town *</label>
-                    <input type="text" id="regCity" class="form-control form-control-agri" placeholder="Mandya">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label-agri">District *</label>
-                    <input type="text" id="regDistrict" class="form-control form-control-agri" placeholder="Mandya">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label-agri">PIN Code *</label>
-                    <input type="text" id="regPincode" class="form-control form-control-agri" placeholder="571401">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label-agri">Opening Hours</label>
-                    <input type="text" id="regHours" class="form-control form-control-agri" placeholder="08:30 AM - 08:00 PM (Mon-Sat)">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label-agri">Retail Pesticide / Seed License No.</label>
-                    <input type="text" id="regLicense" class="form-control form-control-agri" placeholder="KA-MDY-RET-2025">
-                  </div>
+            <!-- Price Range Filter Card -->
+            <div class="sidebar-card">
+              <div class="sidebar-title">
+                <i class="fas fa-indian-rupee-sign text-success"></i>
+                <span data-i18n="store.price_filter">Price Filter</span>
+              </div>
+              <div class="mb-3">
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="priceRadio" id="priceAll" value="all" checked onchange="OnlineStore.handlePriceRadio('all')">
+                  <label class="form-check-label fw-semibold text-secondary" for="priceAll" data-i18n="store.price_all">All Prices</label>
                 </div>
-                <div class="mt-4 text-end">
-                  <button class="btn-agri-primary" onclick="submitStoreRegistration()">
-                    <i class="fas fa-check me-1"></i> Register Agricultural Store
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="priceRadio" id="priceUnder500" value="0-500" onchange="OnlineStore.handlePriceRadio('0-500')">
+                  <label class="form-check-label fw-semibold text-secondary" for="priceUnder500" data-i18n="store.price_under_500">Under ₹500</label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="priceRadio" id="price500to1000" value="500-1000" onchange="OnlineStore.handlePriceRadio('500-1000')">
+                  <label class="form-check-label fw-semibold text-secondary" for="price500to1000" data-i18n="store.price_500_1000">₹500 - ₹1,000</label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="priceRadio" id="price1000to2500" value="1000-2500" onchange="OnlineStore.handlePriceRadio('1000-2500')">
+                  <label class="form-check-label fw-semibold text-secondary" for="price1000to2500" data-i18n="store.price_1000_2500">₹1,000 - ₹2,500</label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="priceRadio" id="priceAbove2500" value="2500-99999" onchange="OnlineStore.handlePriceRadio('2500-99999')">
+                  <label class="form-check-label fw-semibold text-secondary" for="priceAbove2500">Above ₹2,500</label>
+                </div>
+              </div>
+              <hr class="my-2 text-muted">
+              <div class="mt-2">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <small class="fw-bold text-muted">Max Budget:</small>
+                  <span class="fw-bold text-success fs-6" id="maxPriceLabel">₹3,500</span>
+                </div>
+                <input type="range" class="form-range" id="priceRangeSlider" min="100" max="3500" step="50" value="3500" oninput="OnlineStore.handlePriceSlider(this.value)">
+              </div>
+            </div>
+
+            <!-- Target Disease Filter Card -->
+            <div class="sidebar-card">
+              <div class="sidebar-title">
+                <i class="fas fa-virus-slash text-success"></i>
+                <span>Filter by Disease</span>
+              </div>
+              <p class="text-muted small mb-2">Find inputs targeted for specific rice diseases:</p>
+              <select class="form-select form-select-sm store-sort-select w-100" id="sidebarDiseaseSelect" onchange="OnlineStore.handleDiseaseDropdown(this.value)">
+                <option value="">-- All Crop Conditions --</option>
+                <option value="Rice Blast">Rice Blast (Leaf & Neck Blast)</option>
+                <option value="Bacterial Leaf Blight">Bacterial Leaf Blight (BLB)</option>
+                <option value="Brown Spot">Brown Spot</option>
+                <option value="Sheath Blight">Sheath Blight</option>
+                <option value="False Smut">False Smut</option>
+                <option value="Khaira Disease">Khaira Disease (Zinc Deficient)</option>
+              </select>
+            </div>
+
+            <!-- Trusted Online Platforms Card -->
+            <div class="sidebar-card">
+              <div class="sidebar-title">
+                <i class="fas fa-store-alt text-success"></i>
+                <span>Trusted Online Portals</span>
+              </div>
+              <p class="text-muted small mb-3">Links to verified Indian agricultural marketplaces:</p>
+              
+              <a href="https://www.bighaat.com" target="_blank" rel="noopener noreferrer" class="partner-pill">
+                <span><i class="fas fa-bag-shopping text-success me-2"></i> BigHaat</span>
+                <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size:0.7rem;">Official</span>
+              </a>
+              <a href="https://www.agrostar.in" target="_blank" rel="noopener noreferrer" class="partner-pill">
+                <span><i class="fas fa-star text-warning me-2"></i> AgroStar</span>
+                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle" style="font-size:0.7rem;">Agri Mart</span>
+              </a>
+              <a href="https://www.iffcobazar.in" target="_blank" rel="noopener noreferrer" class="partner-pill">
+                <span><i class="fas fa-building text-info me-2"></i> IFFCO Bazar</span>
+                <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle" style="font-size:0.7rem;">Co-operative</span>
+              </a>
+              <a href="https://www.kisankraft.com" target="_blank" rel="noopener noreferrer" class="partner-pill">
+                <span><i class="fas fa-tractor text-danger me-2"></i> KisanKraft</span>
+                <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle" style="font-size:0.7rem;">Machinery</span>
+              </a>
+              <a href="https://www.amazon.in/agricultural-inputs" target="_blank" rel="noopener noreferrer" class="partner-pill">
+                <span><i class="fab fa-amazon text-dark me-2"></i> Amazon Agriculture</span>
+                <span class="badge bg-dark-subtle text-dark border border-dark-subtle" style="font-size:0.7rem;">Prime Fast</span>
+              </a>
+            </div>
+
+            <!-- Support / Kisan Help Card -->
+            <div class="sidebar-card" style="background: linear-gradient(145deg, #f0fdf4 0%, #ecfdf5 100%); border-color: var(--store-green-border);">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fas fa-headset text-success fs-5"></i>
+                <span class="fw-bold text-success fs-6">Farmer Helpline</span>
+              </div>
+              <p class="small text-secondary mb-2">Government Kisan Call Center (Toll-Free):</p>
+              <div class="fw-bold text-dark fs-5 mb-2">📞 1800-180-1551</div>
+              <small class="text-muted d-block mb-3">Available 06:00 AM to 10:00 PM daily in 22 languages.</small>
+              <a href="/chat.html" class="btn btn-sm btn-success w-100 fw-bold py-2" style="border-radius:8px;">
+                <i class="fas fa-comments me-1"></i> Consult RiceCare AI
+              </a>
+            </div>
+
+          </div>
+        </aside>
+
+        <!-- =================================================================== -->
+        <!-- 2. RIGHT MAIN CONTENT: SEARCH, SORT & PRODUCT GRID -->
+        <!-- =================================================================== -->
+        <section class="col-lg-9 col-md-8">
+
+          <!-- Mobile Quick Horizontal Category Chips -->
+          <div class="d-md-none mb-3 overflow-x-auto text-nowrap pb-1" style="-webkit-overflow-scrolling: touch;">
+            <button class="btn btn-sm btn-outline-success me-1 fw-bold active" onclick="OnlineStore.selectCategory('All')">All</button>
+            <button class="btn btn-sm btn-outline-success me-1 fw-bold" onclick="OnlineStore.selectCategory('Seeds')">🌾 Seeds</button>
+            <button class="btn btn-sm btn-outline-success me-1 fw-bold" onclick="OnlineStore.selectCategory('Fertilizers')">🧪 Fertilizers</button>
+            <button class="btn btn-sm btn-outline-success me-1 fw-bold" onclick="OnlineStore.selectCategory('Pesticides')">🛡️ Pesticides</button>
+            <button class="btn btn-sm btn-outline-success me-1 fw-bold" onclick="OnlineStore.selectCategory('Tools & Equipment')">⚙️ Tools</button>
+            <button class="btn btn-sm btn-outline-success me-1 fw-bold" onclick="OnlineStore.selectCategory('Organic Products')">🌿 Organic</button>
+          </div>
+
+          <!-- Search & Sort Top Control Bar -->
+          <div class="store-control-card">
+            <div class="row g-3 align-items-center">
+              <div class="col-md-7">
+                <div class="search-input-group">
+                  <i class="fas fa-magnifying-glass search-icon"></i>
+                  <input type="text" id="storeSearchInput" class="store-search-input" 
+                         placeholder="Search seeds, fertilizers, pesticides, tools, active ingredients..." 
+                         data-i18n-placeholder="store.search_placeholder"
+                         oninput="OnlineStore.handleSearchInput(this.value)">
+                  <button type="button" id="searchClearBtn" class="search-clear-btn" onclick="OnlineStore.clearSearchInput()">
+                    <i class="fas fa-times"></i>
                   </button>
                 </div>
               </div>
+              <div class="col-md-5">
+                <div class="d-flex align-items-center justify-content-md-end gap-2">
+                  <label for="storeSortSelect" class="text-muted small fw-bold text-nowrap d-none d-sm-inline" data-i18n="store.sort_popular">Sort By:</label>
+                  <select id="storeSortSelect" class="store-sort-select flex-grow-1 flex-md-grow-0" onchange="OnlineStore.handleSort(this.value)">
+                    <option value="popular" data-i18n="store.sort_popular">Popularity & Rating</option>
+                    <option value="price_asc" data-i18n="store.sort_price_low">Price: Low to High</option>
+                    <option value="price_desc" data-i18n="store.sort_price_high">Price: High to Low</option>
+                    <option value="rating" data-i18n="store.sort_rating">Top Customer Rating</option>
+                    <option value="discount">Biggest Discount</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Active Filters Strip -->
+            <div id="activeFiltersContainer" class="d-flex flex-wrap align-items-center justify-content-between pt-3 mt-3 border-top border-light">
+              <div class="d-flex flex-wrap align-items-center">
+                <span class="text-muted small fw-bold me-2">Active Filters:</span>
+                <span id="activeFilterTags"></span>
+              </div>
+              <div class="mt-2 mt-sm-0">
+                <span class="text-muted small fw-bold" id="productsCountText">Showing 32 products</span>
+                <button id="clearAllFiltersBtn" class="btn btn-link btn-sm text-danger text-decoration-none fw-semibold p-0 ms-3 d-none" onclick="OnlineStore.resetAllFilters()">
+                  <i class="fas fa-rotate-left me-1"></i> Reset All
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+
+          <!-- Products Grid -->
+          <div id="productsGrid" class="row g-4 row-cols-1 row-cols-sm-2 row-cols-xl-3">
+            <!-- Dynamic product cards will be rendered here by stores.js -->
+          </div>
+
+          <!-- Empty State (Hidden by default) -->
+          <div id="emptyStateBox" class="store-empty-state d-none my-4">
+            <div class="mb-3" style="font-size:3.5rem; color:#a7f3d0;"><i class="fas fa-box-open"></i></div>
+            <h4 class="fw-bold text-dark mb-2">No Matching Agricultural Products Found</h4>
+            <p class="text-muted mb-3" style="max-width:480px; margin:0 auto;">
+              We couldn't find any certified items matching your current search terms or filters. Try searching for a different active ingredient or reset your filters.
+            </p>
+            <button class="btn btn-success fw-bold px-4 py-2" onclick="OnlineStore.resetAllFilters()" style="border-radius:10px;">
+              <i class="fas fa-rotate-left me-1"></i> Reset All Filters
+            </button>
+          </div>
+
+        </section>
+
       </div>
     </div>
-  </div>
+  </main>
 
-  <!-- Modal 4: Connect Mobile Phone GPS Modal -->
-  <div class="modal fade" id="mobileGpsModal" tabindex="-1" aria-hidden="true">
+  <!-- ======================================================================= -->
+  <!-- 3. PRODUCT DETAILS MODAL -->
+  <!-- ======================================================================= -->
+  <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content" style="background:var(--bg-dark);border:1px solid rgba(56,189,248,0.4);color:var(--text-main);box-shadow:0 15px 40px rgba(0,0,0,0.7);">
-        <div class="modal-header" style="border-bottom:1px solid rgba(255,255,255,0.08);">
-          <div class="d-flex align-items-center gap-2">
-            <span class="fs-4">📱</span>
+      <div class="modal-content store-modal-content">
+        
+        <!-- Modal Header -->
+        <div class="store-modal-header d-flex align-items-start justify-content-between">
+          <div class="d-flex align-items-center gap-3">
+            <div id="modalIconAvatar" class="product-icon-avatar" style="width:64px; height:64px; font-size:1.8rem;">
+              <i class="fas fa-seedling text-success"></i>
+            </div>
             <div>
-              <h5 class="text-white fw-bold mb-0">Connect Mobile Phone GPS</h5>
-              <small class="text-muted">Use your mobile phone's real satellite GPS for live map & store tracking</small>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span id="modalCategoryBadge" class="badge bg-success-subtle text-success border border-success-subtle">Category</span>
+                <span id="modalBrand" class="text-muted small fw-bold text-uppercase">Brand</span>
+              </div>
+              <h4 id="modalProductName" class="fw-bold mb-0 text-dark">Product Name</h4>
             </div>
           </div>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
-        <div class="modal-body p-4">
-          <div class="row g-4 align-items-center">
+        <!-- Modal Body -->
+        <div class="store-modal-body">
+          <div class="row g-4">
             
-            <!-- Left Column: QR Code & Link -->
-            <div class="col-md-5 text-center">
-              <div class="p-3 rounded mb-3" style="background:#ffffff;border-radius:16px;display:inline-block;box-shadow:0 8px 20px rgba(0,0,0,0.4);">
-                <div id="modalQrCodeBox" style="width:180px;height:180px;display:flex;align-items:center;justify-content:center;">
-                  <div class="spinner-border text-dark" role="status"></div>
-                </div>
-              </div>
-              <p class="text-white fw-bold mb-1" style="font-size:0.9rem;">
-                <i class="fas fa-camera text-info me-1"></i> Scan with Phone Camera
-              </p>
-              <small class="text-muted d-block mb-3" style="font-size:0.78rem;">
-                Ensure phone & laptop are on the same Wi-Fi / Hotspot
-              </small>
-
-              <!-- Connection Link Input -->
-              <div class="input-group input-group-sm mb-2">
-                <input type="text" id="mobileDirectUrlInput" class="form-control form-control-agri" readonly value="Generating connection link...">
-                <button class="btn btn-outline-info" type="button" onclick="copyMobileUrl()" title="Copy Link to Clipboard">
-                  <i class="fas fa-copy"></i>
-                </button>
-                <a id="mobileDirectUrlOpenLink" href="#" target="_blank" class="btn btn-outline-secondary text-white" title="Open in New Tab (Local test)">
-                  <i class="fas fa-external-link-alt"></i>
-                </a>
-              </div>
-            </div>
-
-            <!-- Right Column: Live Status & Real-Time Sync Stats -->
+            <!-- Left Info Column -->
             <div class="col-md-7">
-              <!-- Live Connection Pill -->
-              <div class="p-3 rounded mb-3" id="modalStatusContainer" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span class="text-muted small">Connection Status:</span>
-                  <span id="modalMobileStatusBadge" class="badge bg-warning text-dark px-2 py-1">
-                    <i class="fas fa-spinner fa-spin me-1"></i> Waiting for Mobile...
-                  </span>
+              <!-- Pricing Row -->
+              <div class="d-flex align-items-baseline gap-2 mb-3">
+                <span id="modalCurrentPrice" class="fs-2 fw-bold text-success font-outfit">₹0</span>
+                <span id="modalOriginalPrice" class="text-muted text-decoration-line-through fs-6">₹0</span>
+                <span id="modalSavingsBadge" class="product-savings-badge">Save 15%</span>
+                <span class="ms-auto badge bg-light text-secondary border" id="modalPackSize">Pack Size</span>
+              </div>
+
+              <!-- Rating & Stock -->
+              <div class="d-flex align-items-center justify-content-between p-2 mb-3 bg-light rounded-3">
+                <div class="rating-stars" id="modalRatingStars">
+                  <i class="fas fa-star"></i> 4.9 <span class="text-muted fw-normal">(318 Reviews)</span>
                 </div>
-                <h6 id="modalMobileStatusHeadline" class="text-white fw-bold mb-1">⏳ Scan QR Code on your Phone</h6>
-                <p id="modalMobileStatusMessage" class="text-muted small mb-0">
-                  Open the link on your mobile browser and tap "Allow" when prompted for GPS location permission.
+                <div class="badge bg-success" id="modalStockStatus">
+                  <i class="fas fa-check-circle me-1"></i> In Stock & Ready to Ship
+                </div>
+              </div>
+
+              <!-- Active Ingredient & Benefit -->
+              <div class="mb-3">
+                <label class="fw-bold text-dark small text-uppercase mb-1">Active Ingredient / Specification:</label>
+                <div id="modalActiveIngredient" class="p-2 bg-light rounded text-dark fw-semibold small border">
+                  Formula
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="fw-bold text-dark small text-uppercase mb-1">Agronomic Benefit & Disease Defense:</label>
+                <p id="modalDiseaseBenefit" class="text-secondary small mb-0 lh-base">
+                  Benefit details
                 </p>
               </div>
 
-              <!-- Live Coordinates Dashboard -->
-              <div class="p-3 rounded mb-3" style="background:rgba(16,185,129,0.05);border:1px solid rgba(52,211,153,0.25);">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <b class="text-emerald small"><i class="fas fa-satellite text-emerald me-1"></i> Live Mobile Coordinates</b>
-                  <span id="modalMobileLastSeenBadge" class="text-muted" style="font-size:0.75rem;">No pings yet</span>
-                </div>
-
-                <div class="row g-2 mb-2 text-center">
-                  <div class="col-6">
-                    <div class="p-2 rounded" style="background:rgba(0,0,0,0.3);">
-                      <small class="text-muted d-block" style="font-size:0.7rem;">LATITUDE</small>
-                      <b id="modalMobileLat" class="text-white">--.----</b>
-                    </div>
-                  </div>
-                  <div class="col-6">
-                    <div class="p-2 rounded" style="background:rgba(0,0,0,0.3);">
-                      <small class="text-muted d-block" style="font-size:0.7rem;">LONGITUDE</small>
-                      <b id="modalMobileLng" class="text-white">--.----</b>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center" style="font-size:0.8rem;">
-                  <span class="text-muted">GPS Accuracy: <b id="modalMobileAccuracy" class="text-white">--</b></span>
-                  <span class="text-muted">Locality: <b id="modalMobileLocality" class="text-emerald">--</b></span>
+              <!-- Dosage & Instructions -->
+              <div class="mb-3">
+                <label class="fw-bold text-dark small text-uppercase mb-1">Recommended Dosage / Rate:</label>
+                <div class="p-2 bg-success-subtle text-success-emphasis rounded small border border-success-subtle">
+                  <i class="fas fa-scale-balanced me-1"></i> <span id="modalDosageLabel">Dosage</span>
                 </div>
               </div>
 
-              <!-- Action Controls -->
-              <div class="d-flex flex-wrap gap-2">
-                <button class="btn btn-sm btn-agri-primary flex-fill" onclick="applyMobileLocationNow()">
-                  <i class="fas fa-check-circle me-1"></i> Use Mobile Location
-                </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="disconnectMobileGps()">
-                  <i class="fas fa-power-off me-1"></i> Disconnect
-                </button>
+              <!-- Safety Precautions -->
+              <div>
+                <label class="fw-bold text-dark small text-uppercase mb-1">Farmer Safety & Harvest Guidelines:</label>
+                <p id="modalSafetyGuidelines" class="text-muted small mb-0 lh-base">
+                  Safety details
+                </p>
+              </div>
+            </div>
+
+            <!-- Right Column: Buy Online Links -->
+            <div class="col-md-5 border-start-md">
+              <h6 class="fw-bold text-dark mb-2">
+                <i class="fas fa-cart-shopping text-success me-1"></i> Order from Trusted Portals:
+              </h6>
+              <p class="text-muted small mb-3">Compare prices and click to buy directly from official certified platforms:</p>
+
+              <div id="modalRetailersList">
+                <!-- Populated dynamically with retailer buy cards -->
               </div>
 
-              <!-- Explicit Fallback Option -->
-              <div class="mt-3 pt-2 border-top d-flex justify-content-between align-items-center" style="border-color:rgba(255,255,255,0.08) !important;">
-                <small class="text-muted">Need to test with laptop IP?</small>
-                <button class="btn btn-sm btn-outline-secondary text-white py-0 px-2" style="font-size:0.75rem;" onclick="useLaptopLocationExplicitly()">
-                  Switch to Laptop / IP Location
-                </button>
+              <div class="mt-4 pt-3 border-top">
+                <a href="/chat.html" class="btn btn-outline-success btn-sm w-100 fw-bold py-2 mb-2" style="border-radius:8px;">
+                  <i class="fas fa-robot me-1"></i> Ask RiceCare AI About This Input
+                </a>
+                <small class="text-muted text-center d-block" style="font-size:0.75rem;">
+                  <i class="fas fa-shield-halved me-1 text-success"></i> 100% Genuine Certified Dealer Guarantee
+                </small>
               </div>
-
             </div>
 
           </div>
-
-          <!-- Troubleshooting Help Accordion -->
-          <div class="accordion mt-4" id="gpsHelpAccordion">
-            <div class="accordion-item" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);">
-              <h2 class="accordion-header">
-                <button class="accordion-button collapsed text-white" style="background:transparent;font-size:0.85rem;" type="button" data-bs-toggle="collapse" data-bs-target="#gpsHelpCollapse">
-                  <i class="fas fa-question-circle text-info me-2"></i> Troubleshooting: Location Permission or Connection Issues
-                </button>
-              </h2>
-              <div id="gpsHelpCollapse" class="accordion-collapse collapse p-3" style="font-size:0.82rem;color:#cbd5e1;line-height:1.6;">
-                <b class="text-white d-block mb-1">1. Connected to the same Wi-Fi?</b>
-                Both your laptop and your mobile phone must be connected to the same Wi-Fi network or your phone's mobile hotspot.
-                <br><br>
-                <b class="text-white d-block mb-1">2. How to allow GPS permission if blocked:</b>
-                • <b>Android (Chrome):</b> Tap the lock/tune icon next to the URL &gt; Permissions &gt; Location &gt; Allow &gt; Reload.<br>
-                • <b>iPhone (Safari):</b> Tap 'aA' on the address bar &gt; Website Settings &gt; Location &gt; Allow &gt; Reload.<br>
-                • Ensure your phone's system Location (GPS) toggle is switched ON.
-              </div>
-            </div>
-          </div>
-
         </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer bg-light border-top" style="border-bottom-left-radius:20px; border-bottom-right-radius:20px;">
+          <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">Close</button>
+        </div>
+
       </div>
     </div>
   </div>
 
-  <!-- Footer Placeholder -->
+  <!-- Modal 2: Add New Product to Online Agri Store -->
+  <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content store-modal-content">
+        <div class="store-modal-header d-flex justify-content-between align-items-center">
+          <div>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-1" style="background:rgba(16,185,129,0.15);border:1px solid rgba(5,150,105,0.3);">
+              <span class="badge bg-success" style="font-size:0.75rem;">CATALOG EXPANSION</span>
+              <small class="text-success fw-bold">Verified Input Submission</small>
+            </div>
+            <h5 class="modal-title fw-bold text-dark mb-0" id="addProductModalLabel">
+              <i class="fas fa-plus-circle text-success me-1"></i> Add Agricultural Product
+            </h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <form id="addNewProductForm" onsubmit="OnlineStore.submitNewProduct(event)">
+          <div class="store-modal-body">
+            <div class="row g-3">
+              <div class="col-md-7">
+                <label class="form-label fw-bold text-dark small">Product Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="newProdName" placeholder="e.g. Tata Ralligold Bio-Stimulant" required>
+              </div>
+              <div class="col-md-5">
+                <label class="form-label fw-bold text-dark small">Brand / Manufacturer <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="newProdBrand" placeholder="e.g. Tata Rallis" required>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label fw-bold text-dark small">Category <span class="text-danger">*</span></label>
+                <select class="form-select" id="newProdCategory" required>
+                  <option value="Seeds">🌾 Seeds</option>
+                  <option value="Fertilizers">🧪 Fertilizers</option>
+                  <option value="Pesticides" selected>🛡️ Pesticides</option>
+                  <option value="Tools & Equipment">⚙️ Tools & Equipment</option>
+                  <option value="Organic Products">🌿 Organic Products</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-bold text-dark small">Price (₹) <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="newProdPrice" placeholder="e.g. 520" min="10" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-bold text-dark small">MRP / Original Price (₹)</label>
+                <input type="number" class="form-control" id="newProdOrigPrice" placeholder="e.g. 600" min="10">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-bold text-dark small">Pack Size / Net Content <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="newProdPackSize" placeholder="e.g. 500 ml or 1 kg or 5 kg" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-bold text-dark small">Active Ingredient / Formula <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="newProdActiveIngredient" placeholder="e.g. Azoxystrobin 18.2% + Difenoconazole 11.4% SC" required>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-bold text-dark small">Agronomic Benefit & Target Disease Defense <span class="text-danger">*</span></label>
+                <textarea class="form-control" id="newProdBenefit" rows="2" placeholder="e.g. Broad-spectrum systemic fungicide for Rice Blast and Sheath Blight with preventative & curative action." required></textarea>
+              </div>
+
+              <div class="col-md-5">
+                <label class="form-label fw-bold text-dark small">Trusted Shopping Portal <span class="text-danger">*</span></label>
+                <select class="form-select" id="newProdPlatform" required>
+                  <option value="BigHaat" selected>BigHaat</option>
+                  <option value="AgroStar">AgroStar</option>
+                  <option value="IFFCO Bazar">IFFCO Bazar</option>
+                  <option value="KisanKraft">KisanKraft</option>
+                  <option value="Amazon Agriculture">Amazon Agriculture</option>
+                </select>
+              </div>
+              <div class="col-md-7">
+                <label class="form-label fw-bold text-dark small">Shopping Website Product URL <span class="text-danger">*</span></label>
+                <input type="url" class="form-control" id="newProdUrl" placeholder="https://www.bighaat.com/..." required>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer bg-light border-top" style="border-bottom-left-radius:20px; border-bottom-right-radius:20px;">
+            <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" id="btnSubmitNewProduct" class="btn btn-success btn-sm px-4 fw-bold" style="background:linear-gradient(135deg, #059669, #047857);">
+              <i class="fas fa-check-circle me-1"></i> Add Product to Catalog
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Placeholder (AgriVersion Standard Footer) -->
   <div id="footerPlaceholder"></div>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="/assets/js/i18n.js"></script>
-  <script src="/assets/js/app.js"></script>
-  <script src="/assets/js/stores.js"></script>
+  <script src="/assets/js/i18n.js?v=2.6"></script>
+  <script src="/assets/js/app.js?v=2.6"></script>
+  <script src="/assets/js/stores.js?v=2.6"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      AgriApp.renderNavbar();
-      AgriApp.renderFooter();
+      // 1. Render App Standard Navbar and Footer
+      if (typeof AgriApp !== "undefined") {
+        AgriApp.renderNavbar();
+        AgriApp.renderFooter();
+      }
+
+      // 2. Initialize Online Agri Store (Zero GPS)
+      if (typeof OnlineStore !== "undefined") {
+        OnlineStore.init();
+      }
     });
   </script>
 </body>

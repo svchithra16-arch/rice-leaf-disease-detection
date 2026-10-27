@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   await AgriApp.checkAuth(true);
   loadUserFields();
   initUploadZone();
-  initDetectLocation();
   loadSampleLeavesGallery();
 });
 
@@ -92,35 +91,8 @@ async function testSelectedSampleLeaf() {
   }
 }
 
-async function initDetectLocation(forceRefresh = false) {
-  const textEl = document.getElementById("detectLiveLocText");
-  const spinner = document.getElementById("detectLocSpinner");
-  if (spinner) spinner.classList.add("fa-spin");
-
-  try {
-    const loc = await AgriApp.getLiveLocation(forceRefresh, true);
-    if (loc && loc.lat && loc.lng) {
-      currentDetectLocation = loc;
-      if (textEl) {
-        textEl.textContent = `${loc.city}, ${loc.state} (${loc.isGps ? 'GPS' : 'Live'})`;
-      }
-    }
-  } catch (e) {
-    if (textEl) textEl.textContent = "Location Available (Automatic)";
-  } finally {
-    if (spinner) spinner.classList.remove("fa-spin");
-  }
-}
-
-async function refreshDetectLocation() {
-  if (typeof AgriApp !== "undefined" && AgriApp.showToast) {
-    AgriApp.showToast("Updating live GPS location...", "info");
-  }
-  await initDetectLocation(true);
-  if (currentDetectLocation && typeof AgriApp !== "undefined" && AgriApp.showToast) {
-    AgriApp.showToast(`Location locked to ${currentDetectLocation.label}!`, "success");
-  }
-}
+async function initDetectLocation() {}
+async function refreshDetectLocation() {}
 
 async function loadUserFields() {
   try {
@@ -232,17 +204,6 @@ async function startLeafAnalysis() {
     formData.append("field_id", fieldSelect.value);
   }
 
-  // Request browser geolocation coordinates or fallback
-  try {
-    const loc = currentDetectLocation || await AgriApp.getLiveLocation(false, false);
-    if (loc && loc.lat && loc.lng) {
-      formData.append("latitude", loc.lat);
-      formData.append("longitude", loc.lng);
-      formData.append("location_name", loc.label);
-    }
-  } catch (e) {
-    console.warn("Location attachment skipped:", e);
-  }
 
   try {
     const res = await fetch("/api/detect/upload", {
@@ -523,9 +484,8 @@ async function renderStoreProductCategory(diseaseName) {
     try { loc = await AgriApp.getLiveLocation(false, false); } catch (e) {}
   }
 
-  const locParams = (loc && loc.lat && loc.lng) ? `&lat=${loc.lat}&lng=${loc.lng}&is_gps=true` : '&is_gps=true';
   if (findBtn) {
-    findBtn.href = `/stores.html?disease=${encodeURIComponent(diseaseName)}${locParams}`;
+    findBtn.href = `/stores.html?disease=${encodeURIComponent(diseaseName)}`;
   }
 
   if (diseaseName === "Healthy Rice Leaf" || diseaseName === "Healthy") {
@@ -559,56 +519,34 @@ async function renderStoreProductCategory(diseaseName) {
       }
     }
 
-    // Fetch live stores near user's active location carrying remedies for this disease
-    const storeQueryParams = new URLSearchParams({
-      disease: diseaseName,
-      is_gps: "true",
-      max_distance: "25"
-    });
-    if (loc && loc.lat && loc.lng) {
-      storeQueryParams.append("lat", loc.lat);
-      storeQueryParams.append("lng", loc.lng);
-    }
+    // Fetch certified online remedies for this disease
+    const prodRes = await fetch(`/api/stores/products?disease=${encodeURIComponent(diseaseName)}`);
+    const prodData = await prodRes.json();
 
-    const storeRes = await fetch(`/api/stores?${storeQueryParams.toString()}`);
-    const storeData = await storeRes.json();
-
-    if (storeData.success && storeData.stores && storeData.stores.length > 0 && previewSection && previewList) {
+    if (prodData.success && prodData.products && prodData.products.length > 0 && previewSection && previewList) {
       previewSection.classList.remove("d-none");
-      const locLabel = storeData.search_center ? storeData.search_center.label : (loc ? loc.label : "Your Location");
-      let prevHtml = `<small class="text-emerald d-block mb-2"><i class="fas fa-map-marker-alt me-1"></i> Live Agricultural Stores Near <b>${escapeHtml(locLabel)}</b> Reporting In-Stock Remedies:</small>`;
+      let prevHtml = `<small class="text-emerald d-block mb-2"><i class="fas fa-shopping-basket me-1"></i> Certified Remedies in Online Agri Store:</small>`;
       
-      storeData.stores.slice(0, 3).forEach(s => {
-        const statusBadge = s.relevant_stock_status === 'in_stock'
-          ? '<span class="badge bg-success">🟢 In Stock</span>'
-          : '<span class="badge bg-warning text-dark">🟡 Limited</span>';
-
-        const phoneClean = s.phone ? s.phone.replace(/[^0-9+]/g, '') : '';
-        const dirUrl = `https://www.google.com/maps/dir/?api=1&destination=${s.latitude},${s.longitude}`;
-
-        // Products preview
-        let prodChips = "";
-        const prods = s.relevant_products || s.products || [];
-        if (prods.length > 0) {
-          const prodNames = prods.slice(0, 2).map(p => escapeHtml(p.product_name)).join(", ");
-          prodChips = `<small class="text-info d-block" style="font-size:0.75rem;"><i class="fas fa-flask me-1"></i>Remedies Available: <b>${prodNames}</b></small>`;
-        }
+      prodData.products.slice(0, 3).forEach(p => {
+        const primaryRetailer = (p.trusted_retailers && p.trusted_retailers.length > 0) ? p.trusted_retailers[0] : null;
+        const buyUrl = primaryRetailer ? primaryRetailer.url : `/stores.html?disease=${encodeURIComponent(diseaseName)}`;
+        const retailerName = primaryRetailer ? primaryRetailer.platform : 'Online Store';
 
         prevHtml += `
-          <div class="p-2 rounded mb-1" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);font-size:0.85rem;">
+          <div class="p-2 rounded mb-1" style="background:rgba(255,255,255,0.04);border:1px solid rgba(52,211,153,0.2);font-size:0.85rem;">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-1 mb-1">
               <div>
-                <b class="text-white">🏪 ${escapeHtml(s.store_name)}</b>
-                ${s.is_verified ? '<span class="text-emerald ms-1" title="Verified Retailer">✓</span>' : ''}
-                <span class="badge bg-dark text-emerald ms-1" style="font-size:0.7rem;">${s.distance_text || ''}</span>
+                <b class="text-white">🌱 ${escapeHtml(p.name)}</b>
+                <span class="badge bg-success ms-1" style="font-size:0.72rem;">₹${p.price}</span>
+                <span class="badge bg-secondary ms-1" style="font-size:0.7rem;">${escapeHtml(p.brand || '')}</span>
               </div>
-              <div class="d-flex align-items-center gap-1">
-                ${statusBadge}
-                ${phoneClean ? `<a href="tel:${phoneClean}" class="btn btn-sm btn-outline-light py-0 px-2" style="font-size:0.72rem;"><i class="fas fa-phone-alt me-1"></i>Call</a>` : ''}
-                <a href="${dirUrl}" target="_blank" class="btn btn-sm btn-outline-info py-0 px-2" style="font-size:0.72rem;"><i class="fas fa-directions me-1"></i>Map</a>
+              <div>
+                <a href="${escapeHtml(buyUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-success py-0 px-2" style="font-size:0.74rem;">
+                  <i class="fas fa-cart-shopping me-1"></i>Buy on ${escapeHtml(retailerName)}
+                </a>
               </div>
             </div>
-            ${prodChips}
+            <small class="text-muted d-block" style="font-size:0.75rem;"><i class="fas fa-flask me-1 text-emerald"></i>${escapeHtml(p.active_ingredient || '')} • ${escapeHtml(p.dosage_label || '')}</small>
           </div>
         `;
       });

@@ -13,6 +13,7 @@ AgriVersion is an intelligent, full-stack agricultural decision-support platform
   - **👨‍🌾 Farmer Portal**: Scan leaves, view disease history, download PDF advisory reports, and track crop health.
   - **👤 Admin Dashboard**: Analytics, disease outbreak heatmaps, user management, and system logs.
 - **🛡️ Blur & Quality Validation**: Built-in image pre-validation ensures submitted leaf images are clear and suitable for model inference.
+- **📍 Live Agri Store Search**: Uses the browser's live location and named agricultural shop listings from OpenStreetMap, with map pins and nearest-first distances. OpenStreetMap coverage can be incomplete, and store stock is not implied by a map listing. The search sends the requested coordinates to the OpenStreetMap Overpass service through the backend.
 
 ---
 
@@ -89,6 +90,16 @@ python run.py
 
 The application will launch at:
 👉 **`http://127.0.0.1:5000`**
+
+### Agri Store location testing
+
+Open **Agri Store** while using `http://127.0.0.1:5000` or HTTPS, allow browser location access, and confirm the map center reflects the device's live coordinates. Nearby named agricultural shops are retrieved from OpenStreetMap and sorted by distance; addresses and business details depend on what contributors have mapped. The app does not invent stores or stock availability. If no listings appear, expand the radius or search for a town/PIN code.
+
+Run the focused store-search tests from the project directory:
+
+```bash
+python -m unittest discover -s verification_tests -p "test_store_search.py"
+```
 
 #### Default Test Accounts:
 - **Admin**: `admin@agriversion.com` / `Admin@123`

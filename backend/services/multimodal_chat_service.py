@@ -15,6 +15,7 @@ import json
 import base64
 import time
 import requests
+import urllib.parse
 from PIL import Image
 
 from backend.config import Config
@@ -1014,10 +1015,10 @@ def _generate_general_agronomy_answer(user_message, query_lower):
 
 def _build_store_inquiry_response(query_lower, matched_diseases=None, conversation_history=None):
     """
-    Builds an interactive, structured store availability response with nearby retailer listings,
-    reported stock states, and mandatory non-prescriptive safety disclaimers.
+    Builds an interactive Online Agri Store response with certified products,
+    active ingredients, and direct links to trusted online shopping platforms (BigHaat, AgroStar, IFFCO, Amazon).
     """
-    from backend.services.store_service import search_stores, get_disease_management_category
+    from backend.services.online_store_service import search_online_products
 
     # Determine disease context if any
     target_disease = matched_diseases[0] if (matched_diseases and len(matched_diseases) > 0) else None
@@ -1031,51 +1032,55 @@ def _build_store_inquiry_response(query_lower, matched_diseases=None, conversati
             if target_disease:
                 break
 
-    # Determine location from query
-    loc_query = None
-    for loc_name in ["mandya", "mysuru", "mysore", "maddur", "pandavapura", "bengaluru", "bangalore", "shivamogga", "shimoga", "raichur", "warangal", "thanjavur"]:
-        if loc_name in query_lower:
-            loc_query = loc_name
-            break
+    # Determine category
+    category = None
+    if "seed" in query_lower:
+        category = "Seeds"
+    elif "fertilizer" in query_lower or "urea" in query_lower or "dap" in query_lower:
+        category = "Fertilizers"
+    elif "pest" in query_lower or "fungicide" in query_lower or "medicine" in query_lower or "spray" in query_lower:
+        category = "Pesticides"
+    elif "tool" in query_lower or "sprayer" in query_lower or "weeder" in query_lower:
+        category = "Tools & Equipment"
+    elif "organic" in query_lower or "neem" in query_lower or "bio" in query_lower:
+        category = "Organic Products"
 
-    search_res = search_stores(query=loc_query, disease=target_disease, max_distance_km=60.0)
-    stores = search_res.get("stores", [])[:4]
-    search_center = search_res.get("search_center", {}).get("label", "Mandya Region, Karnataka")
+    search_res = search_online_products(query=None, category=category, disease=target_disease)
+    products = search_res.get("products", [])[:4]
 
     lines = []
     if target_disease:
-        rec = get_disease_management_category(target_disease)
-        lines.append(f"I found participating agricultural retailers near **{search_center}** with reported inputs relevant to **{target_disease}**.")
-        lines.append(f"\n> **Relevant Category:** *{rec.get('category_title', 'Registered Crop Protection')}*\n")
+        lines.append(f"Here are certified agricultural remedies and inputs for managing **{target_disease}** available with doorstep delivery:")
+    elif category:
+        lines.append(f"Here are top-rated certified products in **{category}** available online:")
     else:
-        lines.append(f"I found participating registered agricultural input stores near **{search_center}** with verified inventory records.")
+        lines.append("Here are top certified agricultural products available in the **AgriVersion Online Store**:")
 
-    lines.append("\n### 📍 Participating Agricultural Stores:\n")
+    lines.append("\n### 🛒 Certified Agricultural Products (Doorstep Delivery):\n")
 
-    if not stores:
-        lines.append(f"No stores currently registered within 60 km of {search_center}. You can check the full interactive map on the [🏪 Agri Stores Page](/stores.html).")
+    if not products:
+        lines.append(f"You can browse the full catalog of certified products on our [🛒 Online Agri Store](/stores.html).")
     else:
-        for s in stores:
-            v_badge = "✓ Verified Agri Store" if s.get("is_verified") else "Registered Retailer"
-            status_icon = "🟢" if s.get("relevant_stock_status") == "in_stock" or s.get("overall_stock") == "in_stock" else ("🟡" if s.get("relevant_stock_status") == "limited_stock" else "⚪")
-            stock_msg = s.get("relevant_stock_text") or ("In Stock" if s.get("overall_stock") == "in_stock" else "Contact store for stock")
-            dist = s.get("distance_text", "")
-            updated = s.get("inventory_freshness_text", "Recently")
+        for p in products:
+            price = p["price"]
+            orig = p["original_price"]
+            brand = p.get("brand", "AgriBrand")
+            active = p.get("active_ingredient", "")
+            retailers = p.get("trusted_retailers", [])
+            primary_retailer = retailers[0] if retailers else {"platform": "BigHaat", "url": "https://www.bighaat.com"}
 
-            phone_clean = s.get("phone", "").replace(" ", "").replace("-", "")
-            lat, lng = s.get("latitude"), s.get("longitude")
-            dir_url = f"https://www.google.com/maps/dir/?api=1&destination={lat},{lng}"
-
-            lines.append(f"#### 🏪 **{s['store_name']}** `[{v_badge}]`")
-            lines.append(f"- 📍 **Location:** {s['address']}, {s['city']} (*{dist}*)")
-            lines.append(f"- {status_icon} **Stock Status:** {stock_msg} (*Updated {updated}*)")
-            lines.append(f"- 🕒 **Hours:** {s.get('opening_hours', '08:00 AM - 08:00 PM')}")
-            lines.append(f"- 🔗 **Actions:** [📞 Call Store](tel:{phone_clean}) &nbsp;|&nbsp; [🗺️ Get Directions]({dir_url}) &nbsp;|&nbsp; [🛒 View Store Inventory](/stores.html?store_id={s['id']})")
+            lines.append(f"#### 🌱 **{p['name']}** `[{brand}]`")
+            lines.append(f"- 💰 **Price:** ₹{price} *(MRP: ₹{orig})* &nbsp;|&nbsp; 📦 **Pack:** {p.get('pack_size', 'Standard')}")
+            if active:
+                lines.append(f"- 🔬 **Technical:** `{active}`")
+            lines.append(f"- 🩺 **Agronomic Benefit:** {p.get('disease_benefit', '')}")
+            lines.append(f"- 🔗 **Order Online:** [Buy on {primary_retailer['platform']} ↗]({primary_retailer['url']}) &nbsp;|&nbsp; [View in Store](/stores.html)")
             lines.append("")
 
     lines.append("\n---\n")
-    lines.append("> ⚠️ **Availability & Safety Notice:**\n"
-                 "> Store inventory availability can change rapidly due to farm demand. Always call the retailer to confirm stock before traveling.\n"
-                 "> **AI Detection ≠ Biological Diagnosis • Product Availability ≠ Chemical Prescription.** Always verify with an authorized agricultural officer and follow registered container label instructions.")
+    disease_link_param = f"?disease={urllib.parse.quote_plus(target_disease)}" if target_disease else ""
+    lines.append(f"👉 **[Click here to open the full Online Agri Store](/stores.html{disease_link_param})** to compare prices, filter by category, and read dosage guidelines.\n")
+    lines.append("> ⚠️ **Regulatory Safety Notice:**\n"
+                 "> All chemical crop protection products must be applied according to labeled dosage instructions and pre-harvest intervals (PHI). Always follow personal protective equipment (PPE) guidelines.")
 
     return "\n".join(lines)

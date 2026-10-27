@@ -62,12 +62,20 @@ const AgriI18n = (function() {
   }
 
   function applyTranslations() {
-    // Translate data-i18n elements
+    // Translate data-i18n elements (preserving child icons if present)
     document.querySelectorAll("[data-i18n]").forEach(el => {
       const key = el.getAttribute("data-i18n");
       const val = t(key);
-      if (val && typeof val === "string") {
-        el.textContent = val;
+      if (val && typeof val === "string" && val !== key) {
+        const icon = el.querySelector("i, .brand-icon");
+        if (icon) {
+          const clonedIcon = icon.cloneNode(true);
+          el.innerHTML = "";
+          el.appendChild(clonedIcon);
+          el.appendChild(document.createTextNode(" " + val));
+        } else {
+          el.textContent = val;
+        }
       }
     });
 
@@ -75,7 +83,7 @@ const AgriI18n = (function() {
     document.querySelectorAll("[data-i18n-html]").forEach(el => {
       const key = el.getAttribute("data-i18n-html");
       const val = t(key);
-      if (val && typeof val === "string") {
+      if (val && typeof val === "string" && val !== key) {
         el.innerHTML = val;
       }
     });
@@ -84,16 +92,25 @@ const AgriI18n = (function() {
     document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
       const key = el.getAttribute("data-i18n-placeholder");
       const val = t(key);
-      if (val && typeof val === "string") {
+      if (val && typeof val === "string" && val !== key) {
         el.setAttribute("placeholder", val);
       }
     });
 
-    // Update language selector dropdown label
+    // Translate data-i18n-title elements
+    document.querySelectorAll("[data-i18n-title]").forEach(el => {
+      const key = el.getAttribute("data-i18n-title");
+      const val = t(key);
+      if (val && typeof val === "string" && val !== key) {
+        el.setAttribute("title", val);
+      }
+    });
+
+    // Update language selector dropdown label & active checkmark
     const activeLangObj = SUPPORTED_LANGUAGES[currentLang] || SUPPORTED_LANGUAGES["en"];
     const labelEl = document.getElementById("currentLangLabel");
     if (labelEl) {
-      labelEl.textContent = `🌐 ${activeLangObj.native}`;
+      labelEl.innerHTML = `🌐 ${activeLangObj.native}`;
     }
 
     // Dispatch custom event
@@ -116,7 +133,7 @@ const AgriI18n = (function() {
     `;
 
     for (const [code, info] of Object.entries(SUPPORTED_LANGUAGES)) {
-      const activeClass = (code === currentLang) ? "active" : "";
+      const activeClass = (code === currentLang) ? "active fw-bold text-success" : "";
       html += `
         <li>
           <a class="dropdown-item dropdown-item-agri ${activeClass}" href="javascript:void(0)" onclick="AgriI18n.setLanguage('${code}')">
@@ -132,7 +149,24 @@ const AgriI18n = (function() {
   }
 
   async function setLanguage(lang) {
+    if (!SUPPORTED_LANGUAGES[lang]) lang = "en";
+    currentLang = lang;
+    localStorage.setItem("agri_lang", lang);
+
     await loadTranslations(lang);
+    renderLanguageDropdown();
+    applyTranslations();
+
+    // Re-render navigation bars
+    if (window.AgriApp && typeof window.AgriApp.renderNavbar === "function") {
+      window.AgriApp.renderNavbar();
+    }
+
+    // Re-render store catalog if on store page
+    if (window.OnlineStore && typeof window.OnlineStore.renderCatalog === "function") {
+      window.OnlineStore.renderCatalog();
+    }
+
     // Optionally update user profile on server
     try {
       fetch("/api/auth/profile", {
@@ -146,6 +180,7 @@ const AgriI18n = (function() {
   function init() {
     loadTranslations(currentLang).then(() => {
       renderLanguageDropdown();
+      applyTranslations();
     });
   }
 

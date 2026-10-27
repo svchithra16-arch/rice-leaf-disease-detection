@@ -9,7 +9,7 @@ Endpoints for:
 - Admin Verification & Governance
 """
 
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, current_app, request, jsonify, session
 from backend.database.db import db
 from backend.database.models import Store, Product, StoreRequest, StoreReview, AdminLog
 from backend.services.store_service import (
@@ -20,8 +20,7 @@ from backend.services.store_service import (
     update_product_inventory,
     create_stock_notification_request,
     add_store_review,
-    DISEASE_CATEGORY_MAPPINGS,
-    LIVE_STORES_CACHE
+    DISEASE_CATEGORY_MAPPINGS
 )
 from backend.utils.auth_helpers import get_current_user, login_required, admin_required
 
@@ -35,42 +34,64 @@ store_bp = Blueprint("store_bp", __name__, url_prefix="/api/stores")
 @store_bp.route("", methods=["GET"])
 def get_stores():
     """
-    Search and retrieve nearby participating agricultural stores.
-    Supports query, pincode, geolocation, disease, category, stock, distance & sorting.
+    Online Agri Store & Product Catalog API.
+    Returns certified agricultural products (Seeds, Fertilizers, Pesticides, Farming Tools)
+    with pricing, active ingredients, disease recommendations, and links to trusted
+    online shopping platforms (BigHaat, AgroStar, IFFCO Bazar, KisanKraft, Amazon Agriculture).
+    Zero GPS/location dependency.
     """
-    user_lat = request.args.get("lat")
-    user_lng = request.args.get("lng")
-    is_gps = request.args.get("is_gps", "false").lower() in ["true", "1", "yes"]
-    query = request.args.get("query", "").strip()
-    pincode = request.args.get("pincode", "").strip()
-    disease = request.args.get("disease", "").strip()
     category = request.args.get("category", "").strip()
-    stock_status = request.args.get("stock_status", "").strip()
-    verified_only = request.args.get("verified_only", "false").lower() in ["true", "1", "yes"]
-    open_now = request.args.get("open_now", "false").lower() in ["true", "1", "yes"]
-    
-    try:
-        max_dist = float(request.args.get("max_distance", 50.0))
-    except (ValueError, TypeError):
-        max_dist = 50.0
+    disease = request.args.get("disease", "").strip()
+    query = request.args.get("query", "").strip()
+    sort_by = request.args.get("sort_by", "popular").strip()
+    min_price = request.args.get("min_price")
+    max_price = request.args.get("max_price")
 
-    sort_by = request.args.get("sort_by", "distance").strip()
-
-    result = search_stores(
-        user_lat=user_lat,
-        user_lng=user_lng,
+    from backend.services.online_store_service import search_online_products
+    result = search_online_products(
         query=query,
-        pincode=pincode,
-        disease=disease,
         category=category,
-        stock_status=stock_status,
-        verified_only=verified_only,
-        open_now=open_now,
-        max_distance_km=max_dist,
+        disease=disease,
         sort_by=sort_by,
-        is_gps=is_gps
+        min_price=min_price,
+        max_price=max_price
     )
+    # Expose under 'stores' key for backwards compatibility
+    result["stores"] = result["products"]
     return jsonify(result)
+
+
+@store_bp.route("/products", methods=["GET"])
+def get_products():
+    """Returns online agricultural products catalog."""
+    return get_stores()
+
+
+@store_bp.route("/products", methods=["POST"])
+@store_bp.route("/add-product", methods=["POST"])
+def add_product_to_online_catalog():
+    """Adds a new agricultural product to the Online Agri Store catalog."""
+    data = request.get_json() or {}
+    if not data.get("name"):
+        return jsonify({"success": False, "message": "Product name is required."}), 400
+
+    from backend.services.online_store_service import add_online_product
+    new_prod = add_online_product(data)
+    return jsonify({
+        "success": True,
+        "message": f"Product '{new_prod['name']}' added to Online Agri Store successfully!",
+        "product": new_prod
+    }), 201
+
+
+@store_bp.route("/products/<prod_id>", methods=["GET"])
+def get_product_detail(prod_id):
+    """Returns detailed product view with dosage and trusted store links."""
+    from backend.services.online_store_service import get_online_product_by_id
+    detail = get_online_product_by_id(prod_id)
+    if not detail:
+        return jsonify({"success": False, "message": "Product not found."}), 404
+    return jsonify({"success": True, **detail})
 
 
 
@@ -174,9 +195,6 @@ def reverse_geocode_api():
 @store_bp.route("/<int:store_id>", methods=["GET"])
 def get_store_detail(store_id):
     """Returns full details, complete inventory, and reviews for a single store."""
-    if store_id in LIVE_STORES_CACHE:
-        return jsonify({"success": True, "store": LIVE_STORES_CACHE[store_id]})
-
     store = db.session.get(Store, store_id)
     if not store:
         return jsonify({"success": False, "message": "Agricultural store not found."}), 404
@@ -187,16 +205,13 @@ def get_store_detail(store_id):
 
 @store_bp.route("/categories", methods=["GET"])
 def get_categories():
-    """Returns available product categories and list of supported rice diseases."""
+    """Returns supported agricultural product categories and rice diseases."""
     categories = [
-        "All Categories",
-        "Fungicides",
-        "Bactericides",
-        "Insecticides",
-        "Bio-control & Organic",
-        "Fertilizers & Micronutrients",
-        "Seed Treatment",
-        "Farming Tools & Equipment"
+        "Seeds",
+        "Fertilizers",
+        "Pesticides",
+        "Tools & Equipment",
+        "Organic Products",
     ]
     diseases = list(DISEASE_CATEGORY_MAPPINGS.keys())
     return jsonify({
@@ -287,6 +302,15 @@ def register_store():
 
     if not store_name or not phone or not address or not city or not pincode:
         return jsonify({"success": False, "message": "Please fill in all mandatory store fields (Name, Phone, Address, City, PIN)."}), 400
+    try:
+        latitude = float(data["latitude"])
+        longitude = float(data["longitude"])
+    except (KeyError, TypeError, ValueError):
+        return jsonify({"success": False, "message": "Live GPS coordinates are required to register a store."}), 400
+    if not (-90 <= latitude <= 90 and -180 <= longitude <= 180):
+        return jsonify({"success": False, "message": "Store coordinates are outside valid bounds."}), 400
+    data["latitude"] = latitude
+    data["longitude"] = longitude
 
     # Auto-verify if registered by admin, otherwise pending
     is_admin = bool(user and user.role == "admin")

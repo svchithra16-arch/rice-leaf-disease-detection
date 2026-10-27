@@ -7,7 +7,7 @@
     "detect": "Detect Disease",
     "camera": "Live Camera",
     "chat": "RiceCare AI",
-    "stores": "Agri Stores",
+    "stores": "Online Agri Store",
     "history": "Scan History",
     "analytics": "Analytics",
     "farms": "My Farms",
@@ -58,6 +58,8 @@
     "quick_chat_desc": "Multimodal conversational assistant for questions and leaf image consultations",
     "quick_farms_card": "Farm & Field Manager",
     "quick_farms_desc": "Organize your paddy acreage, fields, and track disease outbreaks",
+    "quick_stores_card": "Online Agri Store",
+    "quick_stores_desc": "Order certified seeds, fertilizers, pesticides, tools & organic products online",
     "weather_risk_title": "Paddy Disease Environmental Risk Index",
     "recent_scans_title": "Recent Crop Diagnostics",
     "no_scans": "No scans recorded yet. Upload your first rice leaf photo to get started!"
@@ -100,9 +102,9 @@
     "welcome_msg": "Hello! I am RiceCare AI, your agricultural specialist. You can ask me any questions regarding rice crop diseases, pest management, weather risks, soil health, or attach leaf photos for deep multimodal visual diagnosis. How can I assist your farm today?",
     "new_chat": "New Conversation",
     "search_chats": "Search conversations...",
-    "attach_image": "Attach Leaf Image",
+    "attach_image": "Attach Leaf Photo",
     "camera_snap": "Take Leaf Photo",
-    "voice_input": "Voice Input (Speak)",
+    "voice_input": "Voice Input",
     "listening": "Listening... Speak your agricultural question",
     "stop_listening": "Stop Recording",
     "type_placeholder": "Ask a rice farming question or describe symptoms...",
@@ -118,7 +120,9 @@
     "symp_title": "🌱 Visible Symptoms",
     "prev_title": "🛡️ Prevention Advisory",
     "mgmt_title": "🌾 Agronomic Management",
-    "note_title": "⚠️ Agricultural Disclaimer"
+    "note_title": "⚠️ Agricultural Disclaimer",
+    "type_message": "Ask RiceCare AI about symptoms, chemical dosages, or fertilizers...",
+    "send": "Send"
   },
   "farms": {
     "title": "My Farms & Acreage Management",
@@ -164,8 +168,8 @@
     "add_disease_btn": "+ Add Disease Profile"
   },
   "stores": {
-    "title": "Local Agricultural Store & Product Availability",
-    "subtitle": "Locate registered agricultural retailers stocking inputs for rice crop disease management near you",
+    "title": "Online Agri Store",
+    "subtitle": "Order certified seeds, fertilizers, pesticides, and farming tools from trusted online platforms with direct doorstep delivery",
     "search_placeholder": "Town, District, or PIN Code (e.g. Mandya, 571401)",
     "find_nearby": "Find Nearby Stores",
     "in_stock": "In Stock",
@@ -200,5 +204,51 @@
     "dirty_panicle": "Dirty Panicle",
     "kernel_smut": "Kernel Smut",
     "udbatta": "Udbatta Disease"
+  },
+  "store": {
+    "hero_badge1": "Verified Agricultural Marketplace",
+    "hero_badge2": "CIBRC & ICAR Certified",
+    "hero_title": "Online Agri Store",
+    "hero_subtitle": "Order certified paddy seeds, high-efficiency nano-fertilizers, targeted fungicides, modern farming tools, and organic inputs from trusted online shopping portals with prompt doorstep delivery to your village.",
+    "ask_ricecare": "Ask RiceCare AI",
+    "scan_crop_first": "Scan Crop First",
+    "categories_title": "Categories",
+    "cat_all": "All Products",
+    "cat_seeds": "Seeds",
+    "cat_fertilizers": "Fertilizers",
+    "cat_pesticides": "Pesticides",
+    "cat_tools": "Tools & Equipment",
+    "cat_organic": "Organic Products",
+    "price_filter": "Price Filter",
+    "price_all": "All Prices",
+    "price_under_500": "Under ₹500",
+    "price_500_1000": "₹500 - ₹1,000",
+    "price_1000_2500": "₹1,000 - ₹2,500",
+    "search_placeholder": "Search certified seeds, fertilizers, pesticides...",
+    "sort_popular": "Most Popular / Recommended",
+    "sort_price_low": "Price: Low to High",
+    "sort_price_high": "Price: High to Low",
+    "sort_rating": "Top Rated Products",
+    "view_product": "View Product",
+    "buy_now": "Buy Online",
+    "trusted_partners": "Trusted Official Retailers",
+    "showing_products": "Showing certified agricultural inputs",
+    "add_product_btn": "+ Add Product"
+  },
+  "camera": {
+    "retake": "Retake Photo",
+    "diagnose_now": "Diagnose Leaf Now",
+    "flip": "Flip Camera",
+    "capture": "Capture Snapshot",
+    "subtitle": "Capture real-time snapshots of rice leaf lesions directly in your paddy field"
+  },
+  "history": {
+    "search_placeholder": "Search disease name (e.g. Blast, Blight)...",
+    "all_severity": "All Severity Levels",
+    "col_disease": "DIAGNOSED DISEASE",
+    "col_severity": "SEVERITY",
+    "col_confidence": "CONFIDENCE",
+    "col_date": "SCAN DATE",
+    "col_action": "REPORT"
   }
 }

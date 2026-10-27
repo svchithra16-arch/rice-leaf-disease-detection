@@ -18,27 +18,34 @@
   <div id="navbarPlaceholder"></div>
 
   <div class="container py-4">
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gy-3">
-      <div>
-        <h2 class="text-white fw-bold mb-1" data-i18n="nav.reports">Diagnostic PDF Reports Center</h2>
-        <p class="text-muted mb-0">Official pathology reports with Grad-CAM heatmaps, severity metrics, and chemical advisories</p>
+    <!-- Header with Rice Leaf Garden Background -->
+    <div class="rice-garden-header">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gy-3">
+        <div>
+          <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background:rgba(16,185,129,0.25);border:1px solid rgba(52,211,153,0.45);">
+            <span class="badge bg-success" style="font-size:0.75rem;">OFFICIAL REPORTS</span>
+            <small class="text-white fw-semibold">XAI Pathology PDFs</small>
+          </div>
+          <h2 class="text-white fw-bold mb-1" data-i18n="nav.reports">Diagnostic PDF Reports Center</h2>
+          <p class="mb-0" style="color:#d1fae5;">Official pathology reports with Grad-CAM heatmaps, severity metrics, and chemical advisories</p>
+        </div>
+        <a href="/detect.html" class="btn-agri-primary">
+          <i class="fas fa-plus-circle me-1"></i> <span data-i18n="nav.detect">New Diagnosis</span>
+        </a>
       </div>
-      <a href="/detect.html" class="btn-agri-primary">
-        <i class="fas fa-plus-circle me-1"></i> <span data-i18n="nav.detect">New Diagnosis</span>
-      </a>
     </div>
 
     <!-- Reports Table -->
     <div class="glass-card p-4">
       <div class="table-responsive">
-        <table class="table table-dark table-hover align-middle mb-0" style="background:transparent;">
+        <table class="table table-hover align-middle mb-0" style="background:transparent;">
           <thead>
-            <tr class="text-muted" style="border-color:rgba(255,255,255,0.08);font-size:0.85rem;">
-              <th>DIAGNOSED DISEASE</th>
-              <th>SEVERITY</th>
+            <tr style="font-size:0.85rem;">
+              <th data-i18n="history.col_disease">DIAGNOSED DISEASE</th>
+              <th data-i18n="history.col_severity">SEVERITY</th>
               <th>FIELD / PLOT</th>
-              <th>GENERATION DATE</th>
-              <th class="text-end">DOWNLOAD PDF</th>
+              <th data-i18n="history.col_date">GENERATION DATE</th>
+              <th class="text-end" data-i18n="history.col_action">DOWNLOAD PDF</th>
             </tr>
           </thead>
           <tbody id="reportsTableBody">

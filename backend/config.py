@@ -18,19 +18,24 @@ class Config:
     PORT = int(os.getenv("PORT", 5000))
 
     # Database Configuration:
-    # 1. Environment variable DATABASE_URL or DATABASE_URI (e.g. Render, Railway, Cloud DB)
-    # 2. Local XAMPP MySQL (localhost:3306, user: root, password: "", db: rice)
-    # 3. Local SQLite database fallback
+    # 1. Environment variable DATABASE_URL or DATABASE_URI (e.g. Render Postgres / Cloud MySQL)
+    # 2. Render cloud without DB env -> use SQLite immediately
+    # 3. Local XAMPP MySQL (localhost:3306, user: root, password: "", db: rice)
+    # 4. Local SQLite database fallback
     _env_db = os.getenv("DATABASE_URL") or os.getenv("DATABASE_URI")
+    is_render = os.getenv("RENDER") is not None
     if _env_db:
         if _env_db.startswith("postgres://"):
             _env_db = _env_db.replace("postgres://", "postgresql://", 1)
         SQLALCHEMY_DATABASE_URI = _env_db
         print(f"[AgriVersion] Using database configured via environment variable")
+    elif is_render:
+        SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(BASE_DIR, 'agriversion.db')}"
+        print("[AgriVersion] Running on Render cloud -> Using SQLite database")
     else:
         try:
             import pymysql
-            conn = pymysql.connect(host="localhost", user="root", password="", port=3306, connect_timeout=2)
+            conn = pymysql.connect(host="localhost", user="root", password="", port=3306, connect_timeout=1)
             with conn.cursor() as cur:
                 cur.execute("CREATE DATABASE IF NOT EXISTS rice CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
             conn.commit()

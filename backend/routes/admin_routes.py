@@ -7,7 +7,6 @@ from flask import Blueprint, request, jsonify
 from backend.database.db import db
 from backend.database.models import User, Prediction, Conversation, DiseaseInfo, AdminLog, Store, Product
 from backend.utils.auth_helpers import get_current_user, admin_required
-from ml.evaluate import generate_model_evaluation_metrics
 
 admin_bp = Blueprint("admin_bp", __name__, url_prefix="/api/admin")
 
@@ -125,6 +124,7 @@ def update_disease(disease_id):
 @admin_bp.route("/ml-metrics", methods=["GET"])
 @admin_required
 def get_ml_metrics():
+    from ml.evaluate import generate_model_evaluation_metrics
     metrics = generate_model_evaluation_metrics()
     return jsonify({"success": True, "metrics": metrics})
 

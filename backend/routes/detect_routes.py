@@ -13,7 +13,6 @@ from backend.services.pdf_service import generate_diagnostic_pdf_report
 from backend.utils.auth_helpers import get_current_user, login_required
 from backend.utils.file_validators import save_uploaded_image, save_base64_image
 from ml.dataset_info import DISEASE_CLASSES, DISEASE_DETAILS
-from ml.predict import predict_rice_disease
 
 from backend.config import Config, BASE_DIR
 from backend.utils.location_helpers import resolve_upload_location

@@ -9,7 +9,6 @@ import cv2
 from PIL import Image
 
 from backend.config import Config
-from ml.predict import predict_rice_disease
 
 
 def run_rice_leaf_diagnosis(image_filename, confidence_threshold=None, blur_threshold=None):
@@ -19,6 +18,7 @@ def run_rice_leaf_diagnosis(image_filename, confidence_threshold=None, blur_thre
     Returns:
         dict with prediction results, generated Grad-CAM filenames, and severity mask filename.
     """
+    from ml.predict import predict_rice_disease
     if confidence_threshold is None:
         confidence_threshold = Config.CONFIDENCE_THRESHOLD
     if blur_threshold is None:

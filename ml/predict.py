@@ -41,6 +41,10 @@ def get_inference_engine():
     global _MODEL_INSTANCE, _GRADCAM_INSTANCE
     if _MODEL_INSTANCE is None:
         device = torch.device("cpu")
+        try:
+            torch.set_num_threads(1)
+        except Exception:
+            pass
         num_classes = len(DISEASE_CLASSES)
         weights_path = os.path.join(os.path.dirname(__file__), "..", "models", "ricenet_weights.pth")
 

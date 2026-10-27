@@ -17,21 +17,29 @@ class Config:
     DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "t")
     PORT = int(os.getenv("PORT", 5000))
 
-    # XAMPP MySQL Database Configuration (localhost:3306, user: root, password: "", db: rice)
-    _default_mysql_uri = "mysql+pymysql://root:@localhost:3306/rice?charset=utf8mb4"
-    _db_uri = os.getenv("DATABASE_URI", _default_mysql_uri)
-    try:
-        import pymysql
-        conn = pymysql.connect(host="localhost", user="root", password="", port=3306, connect_timeout=3)
-        with conn.cursor() as cur:
-            cur.execute("CREATE DATABASE IF NOT EXISTS rice CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
-        conn.commit()
-        conn.close()
-        SQLALCHEMY_DATABASE_URI = _db_uri
-        print("[AgriVersion] Connected to XAMPP MySQL on localhost:3306 (database: rice)")
-    except Exception as _e:
-        print(f"[AgriVersion] XAMPP MySQL unavailable ({_e}). Falling back to local SQLite database.")
-        SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(BASE_DIR, 'agriversion.db')}"
+    # Database Configuration:
+    # 1. Environment variable DATABASE_URL or DATABASE_URI (e.g. Render, Railway, Cloud DB)
+    # 2. Local XAMPP MySQL (localhost:3306, user: root, password: "", db: rice)
+    # 3. Local SQLite database fallback
+    _env_db = os.getenv("DATABASE_URL") or os.getenv("DATABASE_URI")
+    if _env_db:
+        if _env_db.startswith("postgres://"):
+            _env_db = _env_db.replace("postgres://", "postgresql://", 1)
+        SQLALCHEMY_DATABASE_URI = _env_db
+        print(f"[AgriVersion] Using database configured via environment variable")
+    else:
+        try:
+            import pymysql
+            conn = pymysql.connect(host="localhost", user="root", password="", port=3306, connect_timeout=2)
+            with conn.cursor() as cur:
+                cur.execute("CREATE DATABASE IF NOT EXISTS rice CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
+            conn.commit()
+            conn.close()
+            SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:@localhost:3306/rice?charset=utf8mb4"
+            print("[AgriVersion] Connected to XAMPP MySQL on localhost:3306 (database: rice)")
+        except Exception as _e:
+            print(f"[AgriVersion] Local XAMPP MySQL unavailable ({_e}). Falling back to local SQLite database.")
+            SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(BASE_DIR, 'agriversion.db')}"
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
